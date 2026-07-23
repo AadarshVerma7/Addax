@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import prisma from "./lib/prisma.js";
 
 dotenv.config();
 
@@ -13,8 +14,26 @@ const PORT = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
   res.json({
-    message: "YouTube AI Educator API is running",
+    message: "Addax API is running",
   });
+});
+
+app.get("/db-test", async (req, res) => {
+  try {
+    await prisma.$connect();
+
+    res.json({
+      success: true,
+      message: "Connected to MongoDB successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+    });
+  }
 });
 
 app.listen(PORT, () => {

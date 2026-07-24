@@ -3,7 +3,7 @@ import React from 'react'
 function HeroSection() {
     return (
         <>
-            <main className="flex flex-col lg:flex-row justify-between items-end pt-20 gap-16 lg:gap-8">
+            <main className="flex flex-col lg:flex-row justify-between items-end md:pt-20 gap-16 lg:gap-8">
 
                 {/* Left Column */}
                 <div className="flex-1 w-full">

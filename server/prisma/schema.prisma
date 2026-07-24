@@ -38,143 +38,139 @@ enum MESSAGE_ROLE {
   SYSTEM
 }
 
-
 model User {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
   name         String
-  email        String   @unique
+  email        String  @unique
   passwordHash String
   image        String?
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  savedVideos  SavedVideo[]
+  savedVideos   SavedVideo[]
   conversations Conversation[]
 }
 
 model Video {
-  id                   String       @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  youtubeId            String       @unique
-  url                  String
-  title                String?
-  description          String?
-  tags                 String[]
-  categoryId           String?
-  channelId            String?
-  channelTitle         String?
-  thumbnailUrl         String?
+  youtubeId    String   @unique
+  url          String
+  title        String?
+  description  String?
+  tags         String[]
+  categoryId   String?
+  channelId    String?
+  channelTitle String?
+  thumbnailUrl String?
 
   defaultLanguage      String?
   defaultAudioLanguage String?
 
-  duration             Int?
-  publishedAt          DateTime?
+  duration    Int?
+  publishedAt DateTime?
 
+  viewCount    Int?
+  likeCount    Int?
+  commentCount Int?
 
-  viewCount            String?
-  likeCount            String?
-  commentCount         String?
+  status       VIDEO_STATUS @default(PENDING)
+  errorCode    ERROR_CODE?
+  errorMessage String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  status               VIDEO_STATUS @default(PENDING)
-  errorCode            ERROR_CODE?
-  errorMessage         String?
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @updatedAt
-
-  savedBy              SavedVideo[]
-  transcript           Transcript?
-  conversations        Conversation[]
+  savedBy       SavedVideo[]
+  transcript    Transcript?
+  conversations Conversation[]
 }
 
-
 model SavedVideo {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  userId         String   @db.ObjectId
-  videoId        String   @db.ObjectId
+  userId  String @db.ObjectId
+  videoId String @db.ObjectId
 
-  savedAt        DateTime @default(now())
+  savedAt        DateTime  @default(now())
   lastAccessedAt DateTime?
 
-  user           User     @relation(fields: [userId], references: [id])
-  video          Video    @relation(fields: [videoId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  video Video @relation(fields: [videoId], references: [id])
 
   @@unique([userId, videoId])
-
   @@index([userId])
   @@index([videoId])
 }
 
-
 model Transcript {
-  id        String            @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  videoId   String            @unique @db.ObjectId
+  videoId String @unique @db.ObjectId
 
-  language  String?
-  source    TRANSCRIPT_SOURCE
+  language String?
+  source   TRANSCRIPT_SOURCE
 
-  fullText  String
+  fullText String
 
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
-  video     Video              @relation(fields: [videoId], references: [id])
+  video     Video             @relation(fields: [videoId], references: [id])
   chunks    TranscriptChunk[]
 }
 
 model TranscriptChunk {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  transcriptId String     @db.ObjectId
+  transcriptId String @db.ObjectId
 
-  content      String
+  content String
 
   // Timestamp in seconds
-  startTime    Float
-  endTime      Float
-  chunkIndex   Int
-  embedding    Float[]
+  startTime  Float
+  endTime    Float
+  chunkIndex Int
+  embedding  Float[]
 
-  createdAt    DateTime   @default(now())
+  createdAt DateTime @default(now())
 
-  transcript   Transcript @relation( fields: [transcriptId], references: [id] )
+  transcript Transcript @relation(fields: [transcriptId], references: [id])
+
   @@unique([transcriptId, chunkIndex])
   @@index([transcriptId])
 }
 
 model Conversation {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  userId    String    @db.ObjectId
-  videoId   String    @db.ObjectId
+  userId  String @db.ObjectId
+  videoId String @db.ObjectId
 
-  title     String?
+  title String?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user      User      @relation(fields: [userId], references: [id])
-  video     Video     @relation(fields: [videoId], references: [id])
-  messages  Message[]
+  user     User      @relation(fields: [userId], references: [id])
+  video    Video     @relation(fields: [videoId], references: [id])
+  messages Message[]
 
   @@index([userId])
   @@index([videoId])
 }
 
 model Message {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  conversationId String       @db.ObjectId
+  conversationId String @db.ObjectId
 
   role           MESSAGE_ROLE
   content        String
   sourceChunkIds String[]     @db.ObjectId
 
-  createdAt      DateTime     @default(now())
+  createdAt DateTime @default(now())
 
   conversation Conversation @relation(fields: [conversationId], references: [id])
 

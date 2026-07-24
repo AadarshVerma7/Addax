@@ -1,7 +1,7 @@
 import prisma from "../lib/prisma.js";
 import { extractYoutubeVideoId } from "../utils/youtube.utils.js";
 import youtubeService from "./youtube.service.js";
-
+import transcriptService from "./transcript.service.js";
 interface CreateVideoDto{
     url : string
 }
@@ -49,6 +49,7 @@ class VideoService{
                 status: "PENDING"
             }
         })
+        await transcriptService.saveTranscript(video.id, video.youtubeId);
         return {
             success: true,
             video

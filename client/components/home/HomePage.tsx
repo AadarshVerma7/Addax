@@ -6,6 +6,7 @@ import { Metadata } from 'next'
 import HowCanWeHelpSection from './HowCanWeHelpSection';
 import FeaturesSection from './FeaturesSection';
 import FaqSection from './FaqSection';
+import ContactForm from '../contact/ContactForm';
 
 export const metadata: Metadata = {
   title: 'Home',
@@ -28,6 +29,7 @@ function HomePage() {
         <HowCanWeHelpSection />
         <FeaturesSection/>
         <FaqSection/>
+        <ContactForm/>
     </>
   );
 }

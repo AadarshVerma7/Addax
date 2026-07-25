@@ -176,3 +176,12 @@ model Message {
 
   @@index([conversationId])
 }
+
+model Contact {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String?
+  email     String
+  subject   String
+  content   String
+  createdAt DateTime @default(now())
+}

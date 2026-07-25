@@ -9,7 +9,7 @@ function LandingPageNavbar() {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsTop(window.scrollY < 1200);
+            setIsTop(window.scrollY < 800);
         };
 
         handleScroll(); // Set initial state

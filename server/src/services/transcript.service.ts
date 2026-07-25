@@ -1,9 +1,10 @@
 import { YoutubeTranscript } from "youtube-transcript";
 import prisma from "../lib/prisma.js";
 import { TRANSCRIPT_SOURCE } from "@prisma/client";
-
+import { TranscriptSegment, TranscriptChunk } from "../types/transcript.types..js";
+import embeddingService from "./embedding.service.js";
 class TranscriptService {
-    async getTranscript(youtubeId: string) {
+    async getTranscript(youtubeId: string): Promise<TranscriptSegment[]> {
         try {
             const transcript = await YoutubeTranscript.fetchTranscript(youtubeId);
 
@@ -22,8 +23,9 @@ class TranscriptService {
 
     async saveTranscript(videoId : string, youtubeId: string){
         const transcript = await this.getTranscript(youtubeId);
-        
+
         const fullText = transcript.map(segment => segment.text).join(" ");
+
         const savedTranscript = await prisma.transcript.create({
             data: {
                 videoId,
@@ -33,7 +35,67 @@ class TranscriptService {
             }
         })
 
+        const chunks = this.createChunks(transcript);
+
+        for(const chunk of chunks){
+            const embedding = await embeddingService.generateEmbeddings(chunk.content);
+            chunk.embedding = embedding;
+        }
+
+        await prisma.transcriptChunk.createMany({
+            data: chunks.map(chunk => ({
+                transcriptId: savedTranscript.id,
+                content: chunk.content,
+                startTime: chunk.startTime,
+                endTime: chunk.endTime,
+                chunkIndex: chunk.chunkIndex,
+                embedding: chunk.embedding,
+            }))
+        })
         return savedTranscript;
+    }
+
+    private createChunks(transcript : TranscriptSegment[]) : TranscriptChunk[]{
+
+        const chunks : TranscriptChunk[] = [];
+        const MAX_TOKENS = 400;
+        const OVERLAP_TOKENS = 75;  // Add overlap later (For context in each chunk from the previous chunk)
+
+        let i = 0;
+
+        while(i < transcript.length){
+            let currentChunk : TranscriptSegment[] = [];
+            let currentToken = 0;
+
+            while(i < transcript.length && currentToken < MAX_TOKENS){
+                const segment = transcript[i];
+                currentChunk.push(segment);
+                currentToken += this.estimateTokens(segment.text);
+                i++;
+            }
+            if(currentChunk.length === 0){ // just incase the transcript is empty
+                break;
+            }
+
+            const content = currentChunk.map(segment => segment.text).join(" ");
+            const startTime = currentChunk[0].startTime;
+            const endTime = currentChunk[currentChunk.length - 1].endTime;
+
+            chunks.push({
+                content,
+                startTime,
+                endTime,
+                chunkIndex: chunks.length,
+                embedding: [],
+            })
+        }
+
+        return chunks;
+    }
+
+    private estimateTokens(text : string) : number {
+        const words = text.trim().split(/\s+/).length;
+        return Math.ceil(words * 1.3);
     }
 }
 

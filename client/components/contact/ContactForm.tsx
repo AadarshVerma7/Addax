@@ -90,7 +90,7 @@ function ContactForm() {
                                 placeholder="Name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full rounded-md border border-gray-200  bg-white  px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                className="w-full rounded-md border border-gray-200  bg-white  px-3 py-2 text-sm text-gray-90 placeholder:text-gray-400 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                             />
 
                             <motion.textarea
@@ -101,7 +101,7 @@ function ContactForm() {
                                 rows={6}
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
-                                className="w-full resize-none rounded-md border border-gray-200  bg-white  px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                className="w-full resize-none rounded-md border border-gray-200  bg-white  px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                             />
                         </motion.div>
                     )}

@@ -38,21 +38,32 @@ enum MESSAGE_ROLE {
   SYSTEM
 }
 
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+}
+
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  name         String
-  email        String  @unique
-  passwordHash String
-  image        String?
+  name  String
+  email String @unique
+
+  passwordHash String?
+
+  image String?
+
+  provider AuthProvider @default(LOCAL)
+
+  googleId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations
   savedVideos   SavedVideo[]
   conversations Conversation[]
 }
+
 
 model Video {
   id String @id @default(auto()) @map("_id") @db.ObjectId

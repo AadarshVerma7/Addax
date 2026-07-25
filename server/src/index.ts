@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import prisma from "./lib/prisma.js";
 import videoRouter from "./routes/video.routes.js";
 import contactRoutes from "./routes/contact.routes.js"
+import authRoutes from "./routes/auth.routes.js"
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use("/api/videos",videoRouter);
 app.use("/api/contact", contactRoutes);
+app.use("/api/auth", authRoutes);
 
 
 const PORT = 8000;

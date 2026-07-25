@@ -8,9 +8,10 @@ const footerLinks = [
     {
         title: "Quick Links",
         links: [
+            { name: "Home", href: "/" },
             { name: "About", href: "/about" },
-            { name: "Services", href: "/services" },
-            { name: "Blog", href: "#" },
+            // { name: "Services", href: "/services" },
+            // { name: "Blog", href: "#" },
             { name: "Careers", href: "#" },
         ],
     },

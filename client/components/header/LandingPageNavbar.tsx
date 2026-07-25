@@ -21,9 +21,10 @@ function LandingPageNavbar() {
     const navlinks = {
         Home: "/",
         About: "/about",
-        Services: "/services",
-        Blog: "/blog",
+        // Services: "/services",
+        // Blog: "/blog",
         Contact: "/contact",
+        Signup: "/auth/signup",
     };
 
     return (

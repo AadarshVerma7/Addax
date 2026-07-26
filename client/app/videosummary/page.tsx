@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import VideoSummaryMain from "@/components/videosummary/VideoSummaryMain";
+import {Loader} from "lucide-react"
 // 1. Import the useToast hook (adjust the path to match where you saved ToastContext.tsx)
 import { useToast } from "@/components/ui/ToastContext"; 
 
@@ -25,7 +26,8 @@ export default function VideoSummary() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center gap-2 text-white justify-center bg-black">
+        <Loader className="animate-spin text-4xl"/>
         Loading...
       </div>
     ); 
@@ -36,7 +38,7 @@ export default function VideoSummary() {
   }
 
   return (
-    <div className="h-screen">
+    <div className="h-screen bg-black">
       <VideoSummaryMain />
     </div>
   );

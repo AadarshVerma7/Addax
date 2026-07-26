@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import ProceedWithVideo from "./ProceedWithVideo";
 import { motion, AnimatePresence } from "framer-motion";
+import LandingPageNavbar from "../header/LandingPageNavbar";
 
 interface VideoData {
     title: string;
@@ -76,6 +77,7 @@ function VideoSummaryMain() {
 
     return (
         <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#03050f]">
+            <LandingPageNavbar/>
             {/* Localized background glow */}
             <div className="absolute inset-0 flex items-center justify-center">
                 {/* Main blue glow */}

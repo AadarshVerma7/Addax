@@ -29,7 +29,7 @@ export default function LoginPage() {
 
       if (res.ok) {
         login(data.token, data.user);
-        router.push("/");
+        router.push("/videosummary");
       } else {
         setError(data.message || "Login failed");
       }

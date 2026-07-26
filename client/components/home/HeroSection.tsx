@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 function HeroSection() {
     return (
@@ -64,16 +65,18 @@ function HeroSection() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1 }}
                 >
-                    <motion.button
-                        whileHover={{
-                            scale: 1.05,
-                            y: -2,
-                        }}
-                        whileTap={{ scale: 0.96 }}
-                        className="bg-white text-black px-7 py-3 rounded-full text-sm font-semibold shadow-lg"
-                    >
-                        Explore Now
-                    </motion.button>
+                    <Link href="/videosummary">
+  <motion.button
+    whileHover={{
+      scale: 1.05,
+      y: -2,
+    }}
+    whileTap={{ scale: 0.96 }}
+    className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-black shadow-lg"
+  >
+    Explore Now
+  </motion.button>
+</Link>
 
                     <div className="flex items-center gap-3">
                         {/* Avatars */}

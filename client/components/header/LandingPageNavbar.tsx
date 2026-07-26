@@ -11,7 +11,7 @@ function LandingPageNavbar() {
     const [isTop, setIsTop] = useState(true);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const { user, logout } = useAuth();
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLLIElement>(null);
 
     useEffect(() => {
         const handleScroll = () => {

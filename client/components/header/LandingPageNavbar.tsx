@@ -132,10 +132,10 @@ function LandingPageNavbar() {
                 ) : (
                     <li>
                         <Link
-                            href="/auth/signup"
+                            href="/auth/login"
                             className="transition-colors hover:text-blue-600"
                         >
-                            Signup
+                            Login
                         </Link>
                     </li>
                 )}

@@ -135,6 +135,8 @@ model Transcript {
 model TranscriptChunk {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
+  videoId String @db.ObjectId
+
   transcriptId String @db.ObjectId
 
   content String

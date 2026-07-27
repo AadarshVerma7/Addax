@@ -2,10 +2,20 @@ import { Request, Response } from "express";
 import VideoService from "../services/video.service.js"
 import prisma from "../lib/prisma.js";
 import { extractYoutubeVideoId } from "../utils/youtube.utils.js";
-
+import conversationService from "../services/conversation.service.js";
 
 interface CreateVideoBody{
     url: string;
+}
+
+interface GetTranscriptBody{
+    videoId: string,
+}
+
+interface TranscriptSegment {
+    content: string;
+    startTime: number;
+    endTime: number;
 }
 
 class VideoController{
@@ -34,7 +44,7 @@ class VideoController{
         try {
             const { url } = req.body;
             if(!url){
-                return res.status(500).json({
+                return res.status(400).json({
                     success : false,
                     message: "Please Enter a Link"
                 })
@@ -57,6 +67,44 @@ class VideoController{
             return res.status(200).json({
                 result
             })
+        } catch (error : any) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
+    }
+
+    async getTranscript(req: Request<{},{},GetTranscriptBody>, res: Response){
+        try {
+            const { videoId } = req.body;
+            if(!videoId){
+                return res.status(400).json({
+                    success : false,
+                    message: "Please provide the videoId"
+                })
+            }
+
+            const transcriptChunks = await prisma.transcriptChunk.findMany({
+                where:{
+                    videoId : videoId,
+                },
+                orderBy: {
+                    chunkIndex: "asc"
+                }
+            })  
+
+            const transcript: TranscriptSegment[] = transcriptChunks.map(chunk => ({
+                content: chunk.content,
+                startTime: chunk.startTime,
+                endTime: chunk.endTime,
+            }));
+
+            return res.status(200).json({
+                success: true,
+                transcript: transcript
+            });
+
         } catch (error : any) {
             return res.status(400).json({
                 success: false,

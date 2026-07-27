@@ -5,7 +5,8 @@ import retrievalService from "../services/retrieval.service.js";
 
 async function main() {
     const chunks = await retrievalService.retrieveRelevantChunks(
-        "Why is Dijkstra's algorithm greedy?"
+        "6a66db08c694bec9bf9ad704",
+        "What is System Design"
     );
 
     console.log(chunks);

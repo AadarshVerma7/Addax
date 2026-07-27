@@ -44,6 +44,7 @@ class TranscriptService {
 
         await prisma.transcriptChunk.createMany({
             data: chunks.map(chunk => ({
+                videoId,
                 transcriptId: savedTranscript.id,
                 content: chunk.content,
                 startTime: chunk.startTime,

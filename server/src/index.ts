@@ -4,8 +4,12 @@ import dotenv from "dotenv";
 import prisma from "./lib/prisma.js";
 import videoRouter from "./routes/video.routes.js";
 import contactRoutes from "./routes/contact.routes.js"
+<<<<<<< Updated upstream
 import authRoutes from "./routes/auth.routes.js"
 
+=======
+import conversationRouter from "./routes/conversation.routes.js";
+>>>>>>> Stashed changes
 dotenv.config();
 
 const app = express();
@@ -15,8 +19,12 @@ app.use(express.json());
 
 app.use("/api/videos",videoRouter);
 app.use("/api/contact", contactRoutes);
+<<<<<<< Updated upstream
 app.use("/api/auth", authRoutes);
 
+=======
+app.use("/conversations", conversationRouter);
+>>>>>>> Stashed changes
 
 const PORT = 8000;
 

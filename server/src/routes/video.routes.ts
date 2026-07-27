@@ -5,5 +5,6 @@ const videoRouter = Router();
 
 videoRouter.post("/createVideo",videoController.createVideo);
 videoRouter.get("/getVideo",videoController.getVideo);
+videoRouter.get("/getTranscript", videoController.getTranscript);
 
 export default videoRouter;

@@ -2,6 +2,7 @@ import prisma from "../lib/prisma.js";
 import { extractYoutubeVideoId } from "../utils/youtube.utils.js";
 import youtubeService from "./youtube.service.js";
 import transcriptService from "./transcript.service.js";
+import conversationService from "./conversation.service.js";
 interface CreateVideoDto{
     url : string
 }
@@ -9,8 +10,10 @@ interface CreateVideoDto{
 class VideoService{
     async createVideo(data : CreateVideoDto){
 
-        const { url } = data;
+        const user = await prisma.user.findFirst(); // FIX LATER
+        if(!user) throw new Error("No user found");
 
+        const { url } = data;
         const youtubeId = extractYoutubeVideoId(url);
         if(!youtubeId){
             throw new Error("Invalid Youtube Url")
@@ -23,7 +26,12 @@ class VideoService{
         });
 
         if(existingVideo){
-            return existingVideo;
+            const conversation = await conversationService.createConversation(user.id, existingVideo.id);
+            return {
+                success : true,
+                video : existingVideo,
+                conversation,
+            }
         }
 
         const metadata = await youtubeService.getVideoMetaData(youtubeId);
@@ -49,10 +57,13 @@ class VideoService{
                 status: "PENDING"
             }
         })
-        await transcriptService.saveTranscript(video.id, video.youtubeId);
+        const transcript = await transcriptService.saveTranscript(video.id, video.youtubeId);
+        const conversation = await conversationService.createConversation(user.id, video.id);
         return {
             success: true,
-            video
+            video,
+            transcript,
+            conversation,
         };
     }
 }

@@ -23,13 +23,11 @@ function Transcripts({ duration, text }: TranscriptI) {
         </span>
 
         <div className="flex-1 overflow-hidden">
-          <p
-            className={`text-sm leading-6 text-zinc-300 ${
-              !isOpen ? "line-clamp-1" : ""
-            }`}
-          >
-            {text}
-          </p>
+          {!isOpen && (
+            <p className="text-md leading-6 text-zinc-300 line-clamp-1 font-serif">
+              {text}
+            </p>
+          )}
         </div>
 
         <ChevronDown
@@ -44,10 +42,22 @@ function Transcripts({ duration, text }: TranscriptI) {
           isOpen ? "max-h-96 pb-3" : "max-h-0"
         }`}
       >
-        <div className="px-3 pl-[4.75rem]">
-          <p className="text-sm leading-6 text-zinc-300">{text}</p>
+        <div className="px-3 pl-8">
+          <p className="text-md leading-6 text-zinc-300 font-serif">{text}</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+export function TranscriptSkeleton() {
+  return (
+    <div className="max-w-3xl rounded-xl border border-zinc-800/40 bg-zinc-900/60 p-3 animate-pulse flex items-center gap-3">
+      <div className="h-6 w-20 shrink-0 rounded-full bg-zinc-800" />
+      <div className="flex-1 space-y-2">
+        <div className="h-4 bg-zinc-800 rounded w-5/6" />
+      </div>
+      <div className="h-4 w-4 shrink-0 rounded bg-zinc-800" />
     </div>
   );
 }

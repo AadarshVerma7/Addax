@@ -4,7 +4,10 @@ import youtubeService from "./youtube.service.js";
 import transcriptService from "./transcript.service.js";
 import conversationService from "./conversation.service.js";
 interface CreateVideoDto{
-    url : string
+    url : string;
+    title?: string;
+    thumbnailUrl?: string;
+    channelTitle?: string;
 }
 
 class VideoService{
@@ -34,7 +37,28 @@ class VideoService{
             }
         }
 
-        const metadata = await youtubeService.getVideoMetaData(youtubeId);
+        let metadata: any;
+        if (data.title) {
+            metadata = {
+                youtubeId,
+                title: data.title,
+                description: "",
+                tags: [],
+                categoryId: "0",
+                channelId: "",
+                channelTitle: data.channelTitle || "",
+                thumbnailUrl: data.thumbnailUrl || "",
+                defaultLanguage: "en",
+                defaultAudioLanguage: "en",
+                duration: 0,
+                publishedAt: new Date(),
+                viewCount: 0,
+                likeCount: 0,
+                commentCount: 0
+            };
+        } else {
+            metadata = await youtubeService.getVideoMetaData(youtubeId);
+        }
 
         const video = await prisma.video.create({
             data:{
@@ -49,7 +73,7 @@ class VideoService{
                 thumbnailUrl: metadata.thumbnailUrl,
                 defaultLanguage: metadata.defaultLanguage,
                 defaultAudioLanguage: metadata.defaultAudioLanguage,
-                duration: metadata.duration,
+                duration: metadata.duration || 0,
                 publishedAt: new Date(metadata.publishedAt),
                 viewCount: metadata.viewCount,
                 likeCount: metadata.likeCount,
@@ -57,12 +81,20 @@ class VideoService{
                 status: "PENDING"
             }
         })
-        const transcript = await transcriptService.saveTranscript(video.id, video.youtubeId);
+        
+        // Start transcript and embedding generation in the background
+        transcriptService.saveTranscript(video.id, video.youtubeId)
+            .then(() => prisma.video.update({ where: { id: video.id }, data: { status: "READY" } }))
+            .catch((err) => {
+                console.error("Background transcript generation failed:", err);
+                prisma.video.update({ where: { id: video.id }, data: { status: "FAILED" } }).catch(console.error);
+            });
+            
         const conversation = await conversationService.createConversation(user.id, video.id);
+        
         return {
             success: true,
             video,
-            transcript,
             conversation,
         };
     }

@@ -16,6 +16,19 @@ class ConversationService {
         return conversation;
     }
 
+    async getUserConversations(userId: string) {
+        const conversations = await prisma.conversation.findMany({
+            where: { userId },
+            include: {
+                video: true,
+            },
+            orderBy: {
+                updatedAt: "desc",
+            },
+        });
+        return conversations;
+    }
+
     async getConversationMessages(conversationId: string) {
         const conversation = await prisma.conversation.findUnique({
             where: {

@@ -1,7 +1,28 @@
 import { Request, Response } from "express";
 import conversationService from "../services/conversation.service.js";
+import prisma from "../lib/prisma.js";
 
 class ConversationController {
+    async getUserConversations(req: Request, res: Response) {
+        try {
+            const user = await prisma.user.findFirst();
+            if (!user) {
+                return res.status(401).json({ success: false, message: "Unauthorized" });
+            }
+
+            const conversations = await conversationService.getUserConversations(user.id);
+
+            return res.status(200).json({
+                success: true,
+                conversations,
+            });
+        } catch (error: any) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+    }
 
     async getConversationMessages(
         req: Request<{ conversationId: string }>,

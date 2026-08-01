@@ -16,7 +16,7 @@ app.use(express.json());
 app.use("/api/videos",videoRouter);
 app.use("/api/contact", contactRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/conversations", conversationRouter);
+app.use("/api/conversations", conversationRouter);
 
 const PORT = 8000;
 

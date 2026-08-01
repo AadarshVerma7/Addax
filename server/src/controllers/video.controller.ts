@@ -3,9 +3,13 @@ import VideoService from "../services/video.service.js"
 import prisma from "../lib/prisma.js";
 import { extractYoutubeVideoId } from "../utils/youtube.utils.js";
 import conversationService from "../services/conversation.service.js";
+import youtubeService from "../services/youtube.service.js";
 
 interface CreateVideoBody{
     url: string;
+    title?: string;
+    thumbnailUrl?: string;
+    channelTitle?: string;
 }
 
 interface GetTranscriptBody{
@@ -21,7 +25,7 @@ interface TranscriptSegment {
 class VideoController{
     async createVideo(req: Request<{},{}, CreateVideoBody>, res: Response){
         try {
-            const { url } = req.body;
+            const { url, title, thumbnailUrl, channelTitle } = req.body;
 
             if(!url){
                 return res.status(500).json({
@@ -30,7 +34,12 @@ class VideoController{
                 })
             }
 
-            const result = await VideoService.createVideo({url});
+            const result = await VideoService.createVideo({
+                url,
+                title,
+                thumbnailUrl,
+                channelTitle
+            });
             return res.status(200).json(result);
         } catch (error: any) {
             return res.status(400).json({
@@ -66,6 +75,38 @@ class VideoController{
 
             return res.status(200).json({
                 result
+            })
+        } catch (error : any) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
+    }
+
+    async getVideoDetails(req: Request<{},{}, CreateVideoBody>, res: Response){
+        try {
+            const { url } = req.body;
+            if(!url){
+                return res.status(400).json({
+                    success : false,
+                    message: "Please Enter a Link"
+                })
+            }
+
+            const youtubeId = extractYoutubeVideoId(url);
+            if(!youtubeId){
+                return res.status(400).json({
+                    success : false,
+                    message: "Invalid Youtube Url"
+                })
+            }
+
+            const metadata = await youtubeService.getVideoMetaData(youtubeId);
+
+            return res.status(200).json({
+                success: true,
+                data: metadata
             })
         } catch (error : any) {
             return res.status(400).json({

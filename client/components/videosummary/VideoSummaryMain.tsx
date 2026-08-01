@@ -48,17 +48,25 @@ function VideoSummaryMain() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
-                if (!res.ok) throw new Error("Failed to fetch video details");
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/getVideoDetails`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+                
                 const data = await res.json();
-                if (data.error) {
-                    throw new Error(data.error);
+                
+                if (!res.ok || !data.success) {
+                    throw new Error(data.message || "Failed to fetch video details");
                 }
+                
                 setVideoData({
-                    title: data.title || "Unknown Title",
-                    thumbnail: data.thumbnail_url || "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=500&auto=format&fit=crop&q=60",
-                    channelName: data.author_name || "Unknown Creator",
-                    duration: undefined
+                    title: data.data.title || "Unknown Title",
+                    thumbnail: data.data.thumbnailUrl || "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=500&auto=format&fit=crop&q=60",
+                    channelName: data.data.channelTitle || "Unknown Creator",
+                    duration: data.data.duration
                 });
             } catch (err: any) {
                 setError(err.message || "An error occurred fetching video details");
@@ -134,7 +142,7 @@ function VideoSummaryMain() {
                                         thumbnail={videoData.thumbnail}
                                         duration={videoData.duration}
                                         channelName={videoData.channelName}
-                                        proceedUrl={`/videosummary/chat?url=${encodeURIComponent(url)}`}
+                                        proceedUrl={`/videosummary/chat?url=${encodeURIComponent(url)}&title=${encodeURIComponent(videoData.title)}&thumbnail=${encodeURIComponent(videoData.thumbnail)}&channel=${encodeURIComponent(videoData.channelName)}`}
                                     />
                                 </motion.div>
                             )}

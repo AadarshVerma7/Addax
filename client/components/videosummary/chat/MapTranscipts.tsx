@@ -16,7 +16,8 @@ interface TranscriptChunk {
 }
 
 interface MapTransciptsProps {
-  videoId: string;
+  videoId: string | null;
+  isCreatingVideo?: boolean;
 }
 
 const formatTime = (seconds: number) => {
@@ -26,17 +27,22 @@ const formatTime = (seconds: number) => {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
-function MapTranscipts({ videoId }: MapTransciptsProps) {
+function MapTranscipts({ videoId, isCreatingVideo }: MapTransciptsProps) {
   const [transcripts, setTranscripts] = useState<TranscriptChunk[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!videoId) return;
+    if (!videoId) {
+      if (!isCreatingVideo) {
+        setLoading(false);
+      }
+      return;
+    }
+
+    let interval: NodeJS.Timeout;
 
     const fetchTranscripts = async () => {
       try {
-        setLoading(true);
-
         const token = localStorage.getItem("token");
 
         const res = await fetch(
@@ -58,17 +64,33 @@ function MapTranscipts({ videoId }: MapTransciptsProps) {
         }
 
         const data = await res.json();
+        const found = Array.isArray(data) ? data : data.transcript || data.transcripts || [];
 
-        setTranscripts(Array.isArray(data) ? data : data.transcript || data.transcripts || []);
+        if (found.length > 0) {
+            setTranscripts(found);
+            setLoading(false);
+            if (interval) clearInterval(interval);
+        } else {
+            // Keep loading true while polling
+            setLoading(true);
+        }
       } catch (err) {
         console.error("Error fetching transcripts:", err);
-      } finally {
         setLoading(false);
+        if (interval) clearInterval(interval);
       }
     };
 
+    // Initial fetch
     fetchTranscripts();
-  }, [videoId]);
+
+    // Poll every 3 seconds while transcripts are being generated
+    interval = setInterval(fetchTranscripts, 3000);
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [videoId, isCreatingVideo]);
 
   const formatTime = (seconds: number) => {
   const hrs = Math.floor(seconds / 3600);
@@ -84,12 +106,20 @@ function MapTranscipts({ videoId }: MapTransciptsProps) {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
-  if (loading) {
+  if (loading || isCreatingVideo) {
     return (
       <div className="flex max-h-[calc(100vh-500px)] h-full w-full flex-col gap-2 overflow-y-auto rounded-2xl border border-gray-600/40 p-2 no-scrollbar bg-zinc-950/10">
         {Array.from({ length: 5 }).map((_, index) => (
           <TranscriptSkeleton key={index} />
         ))}
+      </div>
+    );
+  }
+
+  if (!loading && !isCreatingVideo && (!videoId || transcripts.length === 0)) {
+    return (
+      <div className="flex max-h-[calc(100vh-500px)] h-full w-full flex-col items-center justify-center gap-2 overflow-y-auto rounded-2xl border border-gray-600/40 p-4 no-scrollbar bg-zinc-950/10">
+        <p className="text-zinc-400 text-sm">{!videoId ? "No video selected." : "No transcripts found."}</p>
       </div>
     );
   }

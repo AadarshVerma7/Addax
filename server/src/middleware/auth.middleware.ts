@@ -5,7 +5,7 @@ interface JwtPayload {
   userId: string;
 }
 
-export const protect = (
+export const authMiddleWare = (
   req: Request,
   res: Response,
   next: NextFunction

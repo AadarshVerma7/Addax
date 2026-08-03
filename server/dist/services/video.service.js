@@ -3,53 +3,40 @@ import { extractYoutubeVideoId } from "../utils/youtube.utils.js";
 import youtubeService from "./youtube.service.js";
 import transcriptService from "./transcript.service.js";
 import conversationService from "./conversation.service.js";
-interface CreateVideoDto{
-    url : string;
-    title?: string;
-    thumbnailUrl?: string;
-    channelTitle?: string;
-}
-
-class VideoService{
-    async createVideo(data : CreateVideoDto, userId: string){
-
+class VideoService {
+    async createVideo(data, userId) {
         const user = await prisma.user.findUnique({
             where: { id: userId }
         });
-        if(!user) throw new Error("No user found");
-
+        if (!user)
+            throw new Error("No user found");
         const { url } = data;
         const youtubeId = extractYoutubeVideoId(url);
-        if(!youtubeId){
-            throw new Error("Invalid Youtube Url")
+        if (!youtubeId) {
+            throw new Error("Invalid Youtube Url");
         }
-
         const existingVideo = await prisma.video.findUnique({
-            where:{
+            where: {
                 youtubeId
             }
         });
-
-        if(existingVideo){
+        if (existingVideo) {
             let conversation = await prisma.conversation.findFirst({
                 where: {
                     userId: user.id,
                     videoId: existingVideo.id
                 }
             });
-
             if (!conversation) {
                 conversation = await conversationService.createConversation(user.id, existingVideo.id);
             }
-
             return {
-                success : true,
-                video : existingVideo,
+                success: true,
+                video: existingVideo,
                 conversation,
-            }
+            };
         }
-
-        let metadata: any;
+        let metadata;
         if (data.title) {
             metadata = {
                 youtubeId,
@@ -68,12 +55,12 @@ class VideoService{
                 likeCount: 0,
                 commentCount: 0
             };
-        } else {
+        }
+        else {
             metadata = await youtubeService.getVideoMetaData(youtubeId);
         }
-
         const video = await prisma.video.create({
-            data:{
+            data: {
                 youtubeId: metadata.youtubeId,
                 url,
                 title: metadata.title,
@@ -92,18 +79,15 @@ class VideoService{
                 commentCount: metadata.commentCount,
                 status: "PENDING"
             }
-        })
-        
+        });
         // Start transcript and embedding generation in the background
         transcriptService.saveTranscript(video.id, video.youtubeId)
             .then(() => prisma.video.update({ where: { id: video.id }, data: { status: "READY" } }))
             .catch((err) => {
-                console.error("Background transcript generation failed:", err);
-                prisma.video.update({ where: { id: video.id }, data: { status: "FAILED" } }).catch(console.error);
-            });
-            
+            console.error("Background transcript generation failed:", err);
+            prisma.video.update({ where: { id: video.id }, data: { status: "FAILED" } }).catch(console.error);
+        });
         const conversation = await conversationService.createConversation(user.id, video.id);
-        
         return {
             success: true,
             video,
@@ -111,5 +95,5 @@ class VideoService{
         };
     }
 }
-
 export default new VideoService();
+//# sourceMappingURL=video.service.js.map

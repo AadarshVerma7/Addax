@@ -28,25 +28,7 @@ function ChatContent() {
       try {
         const token = localStorage.getItem("token");
         
-        // Check if video exists
-        const getRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/getVideo`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ url }),
-        });
-        
-        const getData = await getRes.json();
-        
-        if (getData.result) {
-          setVideoId(getData.result.id);
-          setIsCreatingVideo(false);
-          return;
-        }
-
-        // If not, create it
+        // Call createVideo to get/create the video and ensure the user's conversation is initialized
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/createVideo`, {
           method: "POST",
           headers: {
@@ -62,7 +44,7 @@ function ChatContent() {
         });
 
         if (!res.ok) {
-          throw new Error("Failed to create video");
+          throw new Error("Failed to create/get video");
         }
 
         const data = await res.json();
@@ -70,7 +52,7 @@ function ChatContent() {
           setVideoId(data.video.id);
         }
       } catch (err) {
-        console.error("Error creating video:", err);
+        console.error("Error creating/getting video:", err);
       } finally {
         setIsCreatingVideo(false);
       }

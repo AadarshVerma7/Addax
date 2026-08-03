@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "../../public/logo.png";
@@ -13,8 +14,9 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
-function SideBar() {
+function SideBarContent() {
     const { user } = useAuth();
+    const searchParams = useSearchParams();
     const [isOpen, setIsOpen] = useState<boolean | null>(null);
     const [conversations, setConversations] = useState<any[]>([]);
 
@@ -50,7 +52,7 @@ function SideBar() {
         if (user) {
             fetchConversations();
         }
-    }, [user]);
+    }, [user, searchParams]);
 
     if (isOpen === null) return null;
 
@@ -188,6 +190,14 @@ function SideBar() {
                 )}
             </div>
         </>
+    );
+}
+
+function SideBar() {
+    return (
+        <Suspense fallback={null}>
+            <SideBarContent />
+        </Suspense>
     );
 }
 

@@ -7,6 +7,12 @@ class ConversationController {
                 return res.status(401).json({ success: false, message: "Unauthorized" });
             }
             const conversations = await conversationService.getUserConversations(userId);
+            if (!conversations) {
+                return res.status(200).json({
+                    success: true,
+                    conversations: "",
+                });
+            }
             return res.status(200).json({
                 success: true,
                 conversations,

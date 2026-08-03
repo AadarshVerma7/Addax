@@ -52,6 +52,17 @@ function SideBarContent() {
         if (user) {
             fetchConversations();
         }
+
+        const handleRefetch = () => {
+            if (user) {
+                fetchConversations();
+            }
+        };
+
+        window.addEventListener("refetchConversations", handleRefetch);
+        return () => {
+            window.removeEventListener("refetchConversations", handleRefetch);
+        };
     }, [user, searchParams]);
 
     if (isOpen === null) return null;

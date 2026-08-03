@@ -6,6 +6,7 @@ import videoRouter from "./routes/video.routes.js";
 import contactRoutes from "./routes/contact.routes.js"
 import authRoutes from "./routes/auth.routes.js"
 import conversationRouter from "./routes/conversation.routes.js";
+import SummaryRouter from "./routes/summary.routes.js";
 dotenv.config();
 
 const app = express();
@@ -17,7 +18,7 @@ app.use("/api/videos",videoRouter);
 app.use("/api/contact", contactRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/conversations", conversationRouter);
-
+app.use("/api/summary", SummaryRouter);
 const PORT = 8000;
 
 app.get("/", (req, res) => {

@@ -5,34 +5,34 @@ import { Plus, Minus } from "lucide-react";
 
 const faqs = [
   {
-    question: "What is Vintar?",
+    question: "What is Addax?",
     answer:
-      "Vintar is an online learning platform offering industry-focused courses taught by experienced mentors.",
+      "Addax is an AI-powered learning assistant that lets you summarize, outline, and chat with any YouTube video. Just paste a video link and get instant structured notes.",
   },
   {
-    question: "Are the courses self-paced?",
+    question: "How does the video chat work?",
     answer:
-      "Yes, you can learn at your own pace and access the content whenever you want.",
+      "Once Addax processes a video, it uses the transcript to power a dedicated AI chat. You can ask follow-up questions, request code snippets, or get clarifications, and the AI will respond based on the video's context.",
   },
   {
-    question: "Do I get a certificate after completing a course?",
+    question: "Is there a limit on video length?",
     answer:
-      "Yes, you'll receive a certificate after successfully completing the course requirements.",
+      "Addax can process videos of almost any length, including hours-long lectures, tutorials, and tech talks. For extremely long videos, the AI dynamically partitions the transcript to ensure accurate summary coverage.",
   },
   {
-    question: "Can I access the courses on mobile devices?",
+    question: "Can I see my previous summaries?",
     answer:
-      "Absolutely. Our platform is fully responsive and works across desktop, tablet, and mobile.",
+      "Yes! Your dashboard keeps a sidebar history of all your recent video summaries and chat logs, allowing you to resume your learning sessions at any time.",
   },
   {
-    question: "Who are the mentors on Vintar?",
+    question: "Does Addax support playlists or private videos?",
     answer:
-      "Our mentors are experienced professionals from leading companies and industries.",
+      "Currently, Addax supports all public YouTube videos. Playlist support and private video uploads are on our roadmap for future updates.",
   },
   {
-    question: "What payment methods are accepted?",
+    question: "Is Addax free to use?",
     answer:
-      "We accept major credit/debit cards and other supported online payment methods.",
+      "Addax offers a generous free tier for daily video summarization and AI chat. For users requiring unlimited summaries, batch processing, and advanced AI models, we will soon offer a Pro plan.",
   },
 ];
 
@@ -50,8 +50,8 @@ export default function FaqSection() {
             </h2>
 
             <p className="mt-4 text-sm leading-6 text-gray-500">
-              Find quick answers to common questions about our courses,
-              learning experience, and platform features.
+              Find quick answers to common questions about our video summary
+              features, interactive AI chatbot, and platform capabilities.
             </p>
           </div>
 

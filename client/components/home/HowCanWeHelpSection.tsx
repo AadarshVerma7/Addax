@@ -14,13 +14,13 @@ function HowCanWeHelpSection() {
                     </p>
                 </div>
 
-                <div className='flex flex-col gap-6 md:w-1/2 md:gap-8 text-'>
-                    <p className='text-md text-justify md:text-left font-semibold'>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Non est, amet ducimus modi, expedita tempora illo, repudiandae blanditiis saepe laudantium deserunt. Labore cumque placeat fugit. Culpa facilis illo fugit quas?
+                <div className='flex flex-col gap-6 md:w-1/2 md:gap-8'>
+                    <p className='text-md text-justify md:text-left font-semibold text-zinc-700'>
+                        Addax transforms hours of video into minutes of key insights. By parsing YouTube transcripts and metadata, our intelligent AI extracts core concepts, structures them into clean summaries, and sets up a personal interactive chat so you can ask follow-up questions directly.
                     </p>
 
-                    <p className='text-md text-justify md:text-left'>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Non est, amet ducimus modi, expedita tempora illo, repudiandae blanditiis saepe laudantium deserunt. Labore cumque placeat fugit. Culpa facilis illo fugit quas?
+                    <p className='text-md text-justify md:text-left text-zinc-600'>
+                        Whether you are studying for exams, learning a new programming language, or scanning long tech talks, Addax lets you skip the fluff, save valuable watch time, and build a personalized knowledge base from video content effortlessly.
                     </p>
 
                     <div>

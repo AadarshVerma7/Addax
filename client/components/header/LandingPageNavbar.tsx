@@ -5,9 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "../../public/logo.png";
 import { useAuth } from "../../context/AuthContext";
-import defaultProfileImage from "../../assets/user/userDefaultProfileImage.png"
+import defaultProfileImage from "../../assets/user/userDefaultProfileImage.png";
+import { LayoutDashboard, User, Settings, HelpCircle, LogOut } from "lucide-react";
 
-function LandingPageNavbar() {
+interface LandingPageNavbarProps {
+    theme?: "dark" | "light";
+}
+
+function LandingPageNavbar({ theme = "dark" }: LandingPageNavbarProps) {
     const [isTop, setIsTop] = useState(true);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const { user, logout } = useAuth();
@@ -46,6 +51,9 @@ function LandingPageNavbar() {
         Contact: "/contact",
     };
 
+    const isNavbarDark = theme === "dark" && isTop;
+    const textColor = isNavbarDark ? "text-white" : "text-black";
+
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 md:px-16 lg:px-24 transition-colors duration-300">
             {/* Logo */}
@@ -60,8 +68,7 @@ function LandingPageNavbar() {
                 />
 
                 <p
-                    className={`font-mono font-semibold transition-colors duration-300 ${isTop ? "text-white" : "text-black"
-                        }`}
+                    className={`font-mono font-semibold transition-colors duration-300 ${textColor}`}
                 >
                     Addax
                 </p>
@@ -69,8 +76,7 @@ function LandingPageNavbar() {
 
             {/* Navigation */}
             <ul
-                className={`hidden md:flex items-center gap-10 text-sm font-medium transition-colors duration-300 ${isTop ? "text-white" : "text-black"
-                    }`}
+                className={`hidden md:flex items-center gap-10 text-sm font-medium transition-colors duration-300 ${textColor}`}
             >
                 {Object.entries(navlinks).map(([label, href]) => (
                     <li key={label}>
@@ -99,33 +105,68 @@ function LandingPageNavbar() {
                             </div>
 
                             <span
-                                className={`text-sm font-medium transition-colors duration-300 ${isTop ? "text-white" : "text-black"
-                                    }`}
+                                className={`text-sm font-medium transition-colors duration-300 ${textColor}`}
                             >
                                 {user.name}
                             </span>
                         </button>
 
                         {dropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
+                            <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden text-gray-700">
                                 <div className="px-4 py-3 border-b border-gray-100">
                                     <p className="text-sm font-semibold text-gray-900 truncate">
                                         {user.name}
                                     </p>
-                                    {/* <p className="text-xs text-gray-500 truncate">
+                                    <p className="text-xs text-gray-400 truncate">
                                         {user.email}
-                                    </p> */}
+                                    </p>
                                 </div>
 
-                                <button
-                                    onClick={() => {
-                                        setDropdownOpen(false);
-                                        logout();
-                                    }}
-                                    className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-gray-50 transition-colors"
-                                >
-                                    Logout
-                                </button>
+                                <div className="py-1">
+                                    <Link
+                                        href="/videosummary"
+                                        onClick={() => setDropdownOpen(false)}
+                                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                    >
+                                        <LayoutDashboard size={15} className="text-gray-500" />
+                                        <span>Dashboard</span>
+                                    </Link>
+
+                                    {/* <button
+                                        onClick={() => setDropdownOpen(false)}
+                                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                                    >
+                                        <User size={15} className="text-gray-500" />
+                                        <span>My Profile</span>
+                                    </button> */}
+
+                                    {/* <button
+                                        onClick={() => setDropdownOpen(false)}
+                                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                                    >
+                                        <Settings size={15} className="text-gray-500" />
+                                        <span>Settings</span>
+                                    </button> */}
+
+                                    {/* <button
+                                        onClick={() => setDropdownOpen(false)}
+                                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left border-b border-gray-100 pb-2 mb-1"
+                                    >
+                                        <HelpCircle size={15} className="text-gray-500" />
+                                        <span>Help & FAQ</span>
+                                    </button> */}
+
+                                    <button
+                                        onClick={() => {
+                                            setDropdownOpen(false);
+                                            logout();
+                                        }}
+                                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                                    >
+                                        <LogOut size={15} className="text-red-500" />
+                                        <span>Logout</span>
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </li>

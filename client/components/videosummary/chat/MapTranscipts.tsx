@@ -108,7 +108,7 @@ function MapTranscipts({ videoId, isCreatingVideo }: MapTransciptsProps) {
 
   if (loading || isCreatingVideo) {
     return (
-      <div className="flex max-h-[calc(100vh-500px)] h-full w-full flex-col gap-2 overflow-y-auto rounded-2xl border border-gray-600/40 p-2 no-scrollbar bg-zinc-950/10">
+      <div className="flex h-[350px] lg:max-h-[calc(100vh-500px)] lg:h-auto w-full flex-col gap-2 overflow-y-auto rounded-2xl border border-zinc-800/40 p-2 no-scrollbar bg-zinc-950/10">
         {Array.from({ length: 5 }).map((_, index) => (
           <TranscriptSkeleton key={index} />
         ))}
@@ -118,14 +118,14 @@ function MapTranscipts({ videoId, isCreatingVideo }: MapTransciptsProps) {
 
   if (!loading && !isCreatingVideo && (!videoId || transcripts.length === 0)) {
     return (
-      <div className="flex max-h-[calc(100vh-500px)] h-full w-full flex-col items-center justify-center gap-2 overflow-y-auto rounded-2xl border border-gray-600/40 p-4 no-scrollbar bg-zinc-950/10">
+      <div className="flex h-[350px] lg:max-h-[calc(100vh-500px)] lg:h-auto w-full flex-col items-center justify-center gap-2 overflow-y-auto rounded-2xl border border-zinc-800/40 p-4 no-scrollbar bg-zinc-950/10">
         <p className="text-zinc-400 text-sm">{!videoId ? "No video selected." : "No transcripts found."}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex max-h-[calc(100vh-500px)] w-full flex-col gap-2 overflow-y-auto rounded-2xl border border-gray-600/40 p-2 no-scrollbar">
+    <div className="flex h-[350px] lg:max-h-[calc(100vh-500px)] lg:h-auto w-full flex-col gap-2 overflow-y-auto rounded-2xl border border-zinc-800/40 p-2 no-scrollbar">
       {transcripts.length > 0 ? (
         transcripts.map((chunk, index) => (
           <Transcripts

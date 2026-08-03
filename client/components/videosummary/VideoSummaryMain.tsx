@@ -101,7 +101,7 @@ function VideoSummaryMain() {
     }, [url]);
 
 return (
-    <main className="flex min-h-screen w-full bg-[#03050f]">
+    <main className="flex flex-col lg:flex-row min-h-screen w-full bg-[#03050f]">
         <SideBar />
 
         {/* Main Area */}

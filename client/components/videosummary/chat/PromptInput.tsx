@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { Mic, Send } from "lucide-react";
+import { ArrowUp, Mic } from "lucide-react";
 
 interface PromptInputProps {
   value: string;
@@ -69,20 +69,35 @@ export default function PromptInput({ value, onChange, onSubmit, disabled = fals
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-1 rounded-full border border-white/10 bg-black/40 px-3 py-2 backdrop-blur-xl shadow-[0_0_30px_rgba(59,130,246,0.08)]">
-      <input
-        type="text"
-        placeholder="Ask about this video..."
-        value={value}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.value)}
-        className="min-w-0 flex-1 bg-transparent px-2 text-sm text-white placeholder:text-zinc-500 outline-none disabled:cursor-not-allowed"
-      />
-      <button type="button" onClick={handleMic} disabled={disabled} aria-label="Use voice input" className={`rounded-full p-2 transition-colors disabled:opacity-40 ${isListening ? "bg-blue-500/20 text-blue-300" : "text-zinc-400 hover:bg-white/10 hover:text-white"}`}>
-        <Mic size={18} />
-      </button>
-      <button type="submit" disabled={!value.trim() || disabled} aria-label="Send message" className="rounded-full bg-blue-500 p-2 text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-40">
-        <Send size={17} />
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 pt-2 bg-transparent w-full">
+      <div className="flex-1 flex items-center gap-2 rounded-full border border-zinc-800 bg-[#1C1C1E] px-4 py-1.5 focus-within:border-zinc-700 transition-colors">
+        <input
+          type="text"
+          placeholder="Message"
+          value={value}
+          disabled={disabled}
+          onChange={(event) => onChange(event.target.value)}
+          className="min-w-0 flex-1 bg-transparent text-[15px] text-white placeholder:text-zinc-500 outline-none disabled:cursor-not-allowed"
+        />
+        <button
+          type="button"
+          onClick={handleMic}
+          disabled={disabled}
+          aria-label="Use voice input"
+          className={`rounded-full p-1 transition-colors disabled:opacity-40 shrink-0 ${
+            isListening ? "bg-[#0A84FF]/20 text-[#0A84FF]" : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <Mic size={17} />
+        </button>
+      </div>
+      <button
+        type="submit"
+        disabled={!value.trim() || disabled}
+        aria-label="Send message"
+        className="rounded-full w-8 h-8 flex items-center justify-center bg-[#0A84FF] text-white transition hover:opacity-90 active:scale-95 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:opacity-40 disabled:pointer-events-none shrink-0"
+      >
+        <ArrowUp size={18} strokeWidth={2.5} />
       </button>
     </form>
   );

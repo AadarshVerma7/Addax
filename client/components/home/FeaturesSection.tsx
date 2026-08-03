@@ -12,26 +12,26 @@ import {
 const features = [
     {
         icon: CircleCheckBig,
-        title: "Qucik Summarizer",
+        title: "Quick Summarizer",
         iconClassName: "text-zinc-600",
-        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, fugiat, voluptas, reiciendis animi consectetur iusto neque sequi totam quisquam ea natus. Reiciendis saepe",
+        description: "Generate structured summaries from any YouTube video in seconds. Get high-level overviews and bullet-point key takeaways instantly.",
     },
     {
         icon: Brain,
         title: "Smart Practice",
-        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, fugiat, voluptas, reiciendis animi consectetur iusto neque sequi totam quisquam ea natus. Reiciendis saepe",
+        description: "Reinforce what you learn. Query the AI to generate questions, flashcards, or practice prompts directly based on the video's content.",
         iconClassName: "text-zinc-600",
     },
     {
         icon: BookOpen,
         title: "Structured Learning",
         iconClassName: "text-zinc-600",
-        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, fugiat, voluptas, reiciendis animi consectetur iusto neque sequi totam quisquam ea natus. Reiciendis saepe",
+        description: "Navigate through complex videos with automated sections. Jump to important timestamps and see how the lecture is outline-structured.",
     },
     {
         icon: Bot,
         title: "AI Assistant",
-        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, fugiat, voluptas, reiciendis animi consectetur iusto neque sequi totam quisquam ea natus. Reiciendis saepe",
+        description: "Have a dynamic, context-aware conversation with our chatbot. Ask specific questions, clarify concepts, or request code snippets from the video.",
         iconClassName: "text-zinc-600",
     },
 ];

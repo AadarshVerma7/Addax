@@ -67,25 +67,29 @@ function ChatContent() {
   }, [url, title, thumbnail, channel]);
 
   return (
-    <div className="bg-black h-screen">
-      <div className="flex flex-row">
-        <div>
+    <div className="bg-black min-h-screen lg:h-screen lg:overflow-hidden">
+      <div className="flex flex-col lg:flex-row h-full w-full">
+        <div className="lg:h-full shrink-0">
           <SideBar />
         </div>
 
-        <div className="flex">
-          <div className="flex flex-col gap-4 p-4 justify-top w-full max-w-210">
+        {/* Middle and Right columns wrapper */}
+        <div className="flex-1 flex flex-col lg:flex-row min-w-0 h-full overflow-y-auto lg:overflow-hidden">
+          {/* Middle Column: Video and Transcript/Summary */}
+          <div className="flex flex-col gap-4 p-4 justify-top w-full lg:w-[812px] shrink-0">
             {isCreatingVideo ? (
-              <div className="w-[780px] h-[400px] animate-pulse bg-zinc-900/60 rounded-xl border border-zinc-800/40 flex items-center justify-center">
+              <div className="w-full max-w-[780px] aspect-[780/400] animate-pulse bg-zinc-900/60 rounded-xl border border-zinc-800/40 flex items-center justify-center">
                  <div className="w-16 h-16 bg-zinc-800/60 rounded-full" />
               </div>
             ) : embedUrl ? (
-              <YoutubeVideoFramer
-                width={780}
-                height={400}
-                videoUrl={embedUrl}
-                className="border border-zinc-800/40 "
-              />
+              <div className="w-full max-w-[780px] aspect-[780/400]">
+                <YoutubeVideoFramer
+                  width="100%"
+                  height="100%"
+                  videoUrl={embedUrl}
+                  className="border border-zinc-800/40"
+                />
+              </div>
             ) : null}
 
             {/* Tab Toggles */}
@@ -117,16 +121,17 @@ function ChatContent() {
             {activeTab === "transcript" ? (
               <MapTranscipts videoId={videoId} isCreatingVideo={isCreatingVideo} />
             ) : (
-              <div className="flex max-h-[calc(100vh-500px)] w-full flex-col gap-2 overflow-y-auto rounded-2xl border border-gray-600/40 p-2 no-scrollbar bg-zinc-950/10">
+              <div className="flex h-[350px] lg:max-h-[calc(100vh-500px)] lg:h-auto w-full flex-col gap-2 overflow-y-auto rounded-2xl border border-zinc-800/40 p-2 no-scrollbar bg-zinc-950/10">
                 <Summary videoId={videoId} />
               </div>
             )}
           </div>
-        </div>
 
-        <div className="w-full p-4 ">
+          {/* Right Column: Chat */}
+          <div className="flex-1 p-4 min-w-0 lg:h-full lg:overflow-hidden">
             <Conversations conversationId={conversationId} isCreatingVideo={isCreatingVideo} />
           </div>
+        </div>
       </div>
     </div>
   );

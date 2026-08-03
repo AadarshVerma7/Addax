@@ -6,7 +6,7 @@ import { authMiddleWare } from "../middleware/auth.middleware.js";
 const videoRouter = Router();
 
 videoRouter.post("/createVideo", authMiddleWare, videoController.createVideo);
-videoRouter.post("/getVideo",videoController.getVideo);
+videoRouter.post("/getVideo",authMiddleWare,videoController.getVideo);
 videoRouter.post("/getVideoDetails",videoController.getVideoDetails);
 videoRouter.post("/getTranscript", videoController.getTranscript);
 

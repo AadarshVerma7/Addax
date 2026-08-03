@@ -7,6 +7,7 @@ import { getYoutubeEmbedUrl } from "@/lib/getYoutubeEmbedUrl";
 import MapTranscipts from "@/components/videosummary/chat/MapTranscipts";
 import SideBar from "@/components/videosummary/SideBar";
 import Conversations from "@/components/videosummary/chat/Conversations";
+import Summary from "@/components/videosummary/chat/Summary";
 
 function ChatContent() {
   const searchParams = useSearchParams();
@@ -17,6 +18,7 @@ function ChatContent() {
   const embedUrl = url ? getYoutubeEmbedUrl(url) : null;
   const [videoId, setVideoId] = useState<string | null>(null);
   const [isCreatingVideo, setIsCreatingVideo] = useState(true);
+  const [activeTab, setActiveTab] = useState<"transcript" | "summary">("transcript");
 
   useEffect(() => {
     if (!url) {
@@ -50,6 +52,7 @@ function ChatContent() {
         const data = await res.json();
         if (data.success && data.video) {
           setVideoId(data.video.id);
+          window.dispatchEvent(new Event("refetchConversations"));
         }
       } catch (err) {
         console.error("Error creating/getting video:", err);
@@ -82,7 +85,40 @@ function ChatContent() {
                 className="border border-zinc-800/40 "
               />
             ) : null}
-            <MapTranscipts videoId={videoId} isCreatingVideo={isCreatingVideo} />
+
+            {/* Tab Toggles */}
+            <div className="flex gap-4 border-b border-zinc-800/60 pb-2">
+              <button
+                type="button"
+                onClick={() => setActiveTab("transcript")}
+                className={`pb-2 text-sm font-semibold transition-all relative ${
+                  activeTab === "transcript"
+                    ? "text-blue-400 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-blue-500"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Transcript
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("summary")}
+                className={`pb-2 text-sm font-semibold transition-all relative ${
+                  activeTab === "summary"
+                    ? "text-blue-400 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-blue-500"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Summary
+              </button>
+            </div>
+
+            {activeTab === "transcript" ? (
+              <MapTranscipts videoId={videoId} isCreatingVideo={isCreatingVideo} />
+            ) : (
+              <div className="flex max-h-[calc(100vh-500px)] w-full flex-col gap-2 overflow-y-auto rounded-2xl border border-gray-600/40 p-2 no-scrollbar bg-zinc-950/10">
+                <Summary videoId={videoId} />
+              </div>
+            )}
           </div>
         </div>
 

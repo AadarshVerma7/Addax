@@ -6,7 +6,7 @@ import prisma from "../lib/prisma.js";
 class SummaryService{
 
     private ai = new GoogleGenAI({
-        apiKey : process.env.GEMINI_API_KEY!,
+        apiKey : process.env.GEMINI_API_KEY || process.env.YOUTUBE_API_KEY || "",
     });
 
     async generateSummary(videoId: string, transcript: string){
@@ -66,14 +66,29 @@ ${transcript}
         }
 
         const summary = await this.generateSummary(videoId,transcript.fullText);
-        const savedSummary = await prisma.summary.create({
-            data:{
-                videoId,
-                content: summary,
-            }
-        });
+        try {
+            const savedSummary = await prisma.summary.create({
+                data:{
+                    videoId,
+                    content: summary,
+                }
+            });
 
-        return savedSummary;
+            return savedSummary;
+        } catch (error: any) {
+            // Handle unique constraint failure (e.g. if created concurrently)
+            if (error.code === "P2002") {
+                const existing = await prisma.summary.findUnique({
+                    where: {
+                        videoId: videoId,
+                    }
+                });
+                if (existing) {
+                    return existing;
+                }
+            }
+            throw error;
+        }
     }
 }
 

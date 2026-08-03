@@ -9,7 +9,7 @@ class RetrievalService {
 
         const queryEmbeddings = await embeddingService.generateEmbeddings(question);
 
-        const result = await prisma.$runCommandRaw({
+        const result: any = await prisma.$runCommandRaw({
             aggregate: "TranscriptChunk",
             pipeline: [
                 {

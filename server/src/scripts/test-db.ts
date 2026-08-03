@@ -32,9 +32,9 @@ async function testDatabase() {
 
         publishedAt: new Date("2022-08-04T06:48:26Z"),
 
-        viewCount: "2008846",
-        likeCount: "27621",
-        commentCount: "648",
+        viewCount: 2008846,
+        likeCount: 27621,
+        commentCount: 648,
 
         status: "PENDING",
       },

@@ -12,7 +12,12 @@ class ConversationController {
             }
 
             const conversations = await conversationService.getUserConversations(userId);
-
+            if(!conversations){
+                return res.status(200).json({
+                success: true,
+                conversations : "",
+                })
+            }
             return res.status(200).json({
                 success: true,
                 conversations,

@@ -36,9 +36,10 @@ async function main() {
     console.log("\nAssistant Message Created:");
     console.log(assistantMessage);
 
-    // Fetch all conversation messages
+    // Fetch the newest paginated conversation messages as the conversation owner.
     const messages = await conversationService.getConversationMessages(
-        conversation.id
+        conversation.id,
+        conversation.userId,
     );
 
     console.log("\nConversation History:");

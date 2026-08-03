@@ -7,6 +7,7 @@ import contactRoutes from "./routes/contact.routes.js"
 import authRoutes from "./routes/auth.routes.js"
 import conversationRouter from "./routes/conversation.routes.js";
 import SummaryRouter from "./routes/summary.routes.js";
+import messagesRouter from "./routes/messages.route.js";
 dotenv.config();
 
 const app = express();
@@ -19,6 +20,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/conversations", conversationRouter);
 app.use("/api/summary", SummaryRouter);
+app.use("/api/messages", messagesRouter);
 const PORT = 8000;
 
 app.get("/", (req, res) => {

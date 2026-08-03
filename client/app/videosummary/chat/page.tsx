@@ -17,6 +17,7 @@ function ChatContent() {
   const channel = searchParams.get("channel");
   const embedUrl = url ? getYoutubeEmbedUrl(url) : null;
   const [videoId, setVideoId] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [isCreatingVideo, setIsCreatingVideo] = useState(true);
   const [activeTab, setActiveTab] = useState<"transcript" | "summary">("transcript");
 
@@ -52,6 +53,7 @@ function ChatContent() {
         const data = await res.json();
         if (data.success && data.video) {
           setVideoId(data.video.id);
+          setConversationId(data.conversation?.id || null);
           window.dispatchEvent(new Event("refetchConversations"));
         }
       } catch (err) {
@@ -123,7 +125,7 @@ function ChatContent() {
         </div>
 
         <div className="w-full p-4 ">
-            <Conversations/>
+            <Conversations conversationId={conversationId} isCreatingVideo={isCreatingVideo} />
           </div>
       </div>
     </div>

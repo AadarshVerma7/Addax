@@ -1,10 +1,11 @@
 import prisma from "../lib/prisma.js";
 class MessageService {
-    async createMessage(conversationId, role, content, sourceChunkIds = []) {
+    async createMessage(conversationId, role, content, sourceChunkIds = [], senderName) {
         const message = await prisma.message.create({
             data: {
                 conversationId,
                 role,
+                senderName,
                 content,
                 sourceChunkIds,
             }

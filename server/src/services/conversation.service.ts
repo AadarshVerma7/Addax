@@ -29,25 +29,35 @@ class ConversationService {
         return conversations;
     }
 
-    async getConversationMessages(conversationId: string) {
+    async getConversationMessages(conversationId: string, userId: string, limit = 15, cursor?: string) {
         const conversation = await prisma.conversation.findUnique({
             where: {
                 id: conversationId,
-            },
-            include: {
-                messages: {
-                    orderBy: {
-                        createdAt: "asc",
-                    },
-                },
-            },
+            }
         });
 
         if (!conversation) {
             throw new Error("Conversation not found");
         }
 
-        return conversation.messages;
+        if (conversation.userId !== userId) {
+            throw new Error("You do not have access to this conversation.");
+        }
+
+        const messages = await prisma.message.findMany({
+            where: { conversationId },
+            orderBy: { createdAt: "desc" },
+            take: limit + 1,
+            ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+        });
+        const hasMore = messages.length > limit;
+        const page = hasMore ? messages.slice(0, limit) : messages;
+
+        return {
+            messages: page.reverse(),
+            hasMore,
+            nextCursor: hasMore ? page[page.length - 1].id : null,
+        };
     }
 }
 

@@ -181,6 +181,7 @@ model Message {
   conversationId String @db.ObjectId
 
   role           MESSAGE_ROLE
+  senderName     String?
   content        String
   sourceChunkIds String[]     @db.ObjectId
 

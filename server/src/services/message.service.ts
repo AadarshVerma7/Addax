@@ -6,12 +6,14 @@ class MessageService {
         conversationId: string,
         role: "USER" | "ASSISTANT" | "SYSTEM",
         content: string,
-        sourceChunkIds: string[] = []
+        sourceChunkIds: string[] = [],
+        senderName?: string,
     ) {
         const message = await prisma.message.create({
             data:{
                 conversationId,
                 role,
+                senderName,
                 content,
                 sourceChunkIds,
             }

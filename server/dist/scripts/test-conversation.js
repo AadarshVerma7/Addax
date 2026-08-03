@@ -18,8 +18,8 @@ async function main() {
     const assistantMessage = await messageService.createMessage(conversation.id, "ASSISTANT", "CAP theorem states that a distributed system can guarantee only two of Consistency, Availability and Partition Tolerance.", []);
     console.log("\nAssistant Message Created:");
     console.log(assistantMessage);
-    // Fetch all conversation messages
-    const messages = await conversationService.getConversationMessages(conversation.id);
+    // Fetch the newest paginated conversation messages as the conversation owner.
+    const messages = await conversationService.getConversationMessages(conversation.id, conversation.userId);
     console.log("\nConversation History:");
     console.log(messages);
 }

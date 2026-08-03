@@ -2,6 +2,7 @@ import embeddingService from "./embedding.service.js";
 import { RetrievalChunk } from "../types/retrieval.types.js";
 import prisma from "../lib/prisma.js";
 import { ObjectId } from "bson"
+
 class RetrievalService {
     async retrieveRelevantChunks(
         videoID: string, question: string, topK: number = 5

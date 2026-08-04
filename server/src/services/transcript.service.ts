@@ -1,8 +1,18 @@
 import { YoutubeTranscript } from "youtube-transcript";
 import prisma from "../lib/prisma.js";
-import { TRANSCRIPT_SOURCE } from "@prisma/client";
+import { ERROR_CODE, TRANSCRIPT_SOURCE } from "@prisma/client";
 import { TranscriptSegment, TranscriptChunk } from "../types/transcript.types..js";
 import embeddingService from "./embedding.service.js";
+
+export class TranscriptFetchError extends Error {
+    readonly code = ERROR_CODE.TRANSCRIPT_NOT_AVAILABLE;
+
+    constructor(message: string) {
+        super(message);
+        this.name = "TranscriptFetchError";
+    }
+}
+
 class TranscriptService {
     async getTranscript(youtubeId: string): Promise<TranscriptSegment[]> {
         try {
@@ -17,7 +27,18 @@ class TranscriptService {
 
             return formattedTranscript;
         } catch (error) {
-            throw new Error("Failed to fetch transcript");
+            const providerMessage = error instanceof Error ? error.message : String(error);
+            const message = this.getUserFacingError(providerMessage);
+
+            // Keep the provider error in Render logs; previously it was replaced by a
+            // generic error, which made caption, CAPTCHA, and unavailable-video issues
+            // impossible to distinguish.
+            console.error("YouTube transcript fetch failed", {
+                youtubeId,
+                providerMessage,
+            });
+
+            throw new TranscriptFetchError(message);
         }
     }
 
@@ -97,6 +118,24 @@ class TranscriptService {
     private estimateTokens(text : string) : number {
         const words = text.trim().split(/\s+/).length;
         return Math.ceil(words * 1.3);
+    }
+
+    private getUserFacingError(providerMessage: string): string {
+        const message = providerMessage.toLowerCase();
+
+        if (message.includes("too many requests") || message.includes("captcha")) {
+            return "YouTube is temporarily blocking transcript requests. Please try again later.";
+        }
+
+        if (message.includes("disabled") || message.includes("no transcripts")) {
+            return "This YouTube video does not provide a transcript or captions.";
+        }
+
+        if (message.includes("no longer available") || message.includes("unavailable")) {
+            return "This YouTube video is unavailable.";
+        }
+
+        return "Unable to fetch this video's transcript from YouTube. Please try another video or try again later.";
     }
 }
 

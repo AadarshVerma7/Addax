@@ -55,6 +55,19 @@ ${transcript}
             return existingSummary
         }
 
+        const video = await prisma.video.findUnique({
+            where: { id: videoId },
+            select: { status: true, errorMessage: true },
+        });
+
+        if (!video) {
+            throw new Error("Video not found in DB");
+        }
+
+        if (video.status === "FAILED") {
+            throw new Error(video.errorMessage || "Transcript generation failed for this video.");
+        }
+
         const transcript = await prisma.transcript.findUnique({
             where:{
                 videoId: videoId,
@@ -62,7 +75,7 @@ ${transcript}
         });
 
         if(!transcript){
-            throw new Error("Transcript not found in DB");
+            throw new Error("Transcript is still being generated. Please try again shortly.");
         }
 
         const summary = await this.generateSummary(videoId,transcript.fullText);

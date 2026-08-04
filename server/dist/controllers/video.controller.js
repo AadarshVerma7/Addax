@@ -104,6 +104,22 @@ class VideoController {
                     message: "Please provide the videoId"
                 });
             }
+            const video = await prisma.video.findUnique({
+                where: { id: videoId },
+                select: { status: true, errorMessage: true },
+            });
+            if (!video) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Video not found.",
+                });
+            }
+            if (video.status === "FAILED") {
+                return res.status(422).json({
+                    success: false,
+                    message: video.errorMessage || "Transcript generation failed for this video.",
+                });
+            }
             const transcriptChunks = await prisma.transcriptChunk.findMany({
                 where: {
                     videoId: videoId,

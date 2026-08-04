@@ -30,6 +30,7 @@ const formatTime = (seconds: number) => {
 function MapTranscipts({ videoId, isCreatingVideo }: MapTransciptsProps) {
   const [transcripts, setTranscripts] = useState<TranscriptChunk[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!videoId) {
@@ -60,7 +61,8 @@ function MapTranscipts({ videoId, isCreatingVideo }: MapTransciptsProps) {
         );
 
         if (!res.ok) {
-          throw new Error("Failed to fetch transcripts");
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || "Failed to fetch transcripts");
         }
 
         const data = await res.json();
@@ -69,6 +71,7 @@ function MapTranscipts({ videoId, isCreatingVideo }: MapTransciptsProps) {
         if (found.length > 0) {
             setTranscripts(found);
             setLoading(false);
+            setError(null);
             if (interval) clearInterval(interval);
         } else {
             // Keep loading true while polling
@@ -76,6 +79,7 @@ function MapTranscipts({ videoId, isCreatingVideo }: MapTransciptsProps) {
         }
       } catch (err) {
         console.error("Error fetching transcripts:", err);
+        setError(err instanceof Error ? err.message : "Failed to fetch transcripts.");
         setLoading(false);
         if (interval) clearInterval(interval);
       }
@@ -119,7 +123,7 @@ function MapTranscipts({ videoId, isCreatingVideo }: MapTransciptsProps) {
   if (!loading && !isCreatingVideo && (!videoId || transcripts.length === 0)) {
     return (
       <div className="flex h-[350px] lg:max-h-[calc(100vh-500px)] lg:h-auto w-full flex-col items-center justify-center gap-2 overflow-y-auto rounded-2xl border border-zinc-800/40 p-4 no-scrollbar bg-zinc-950/10">
-        <p className="text-zinc-400 text-sm">{!videoId ? "No video selected." : "No transcripts found."}</p>
+        <p className="text-zinc-400 text-sm">{!videoId ? "No video selected." : error || "No transcripts found."}</p>
       </div>
     );
   }

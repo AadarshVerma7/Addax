@@ -1,8 +1,9 @@
 import prisma from "../lib/prisma.js";
 import { extractYoutubeVideoId } from "../utils/youtube.utils.js";
 import youtubeService from "./youtube.service.js";
-import transcriptService from "./transcript.service.js";
+import transcriptService, { TranscriptFetchError } from "./transcript.service.js";
 import conversationService from "./conversation.service.js";
+import { ERROR_CODE } from "@prisma/client";
 interface CreateVideoDto{
     url : string;
     title?: string;
@@ -24,13 +25,34 @@ class VideoService{
             throw new Error("Invalid Youtube Url")
         }
 
-        const existingVideo = await prisma.video.findUnique({
+        let existingVideo = await prisma.video.findUnique({
             where:{
                 youtubeId
             }
         });
 
         if(existingVideo){
+            // A previous request may have failed because YouTube temporarily blocked
+            // the server. Requeue only videos that do not already have a transcript.
+            if (existingVideo.status === "FAILED") {
+                const existingTranscript = await prisma.transcript.findUnique({
+                    where: { videoId: existingVideo.id },
+                    select: { id: true },
+                });
+
+                if (!existingTranscript) {
+                    existingVideo = await prisma.video.update({
+                        where: { id: existingVideo.id },
+                        data: {
+                            status: "PENDING",
+                            errorCode: null,
+                            errorMessage: null,
+                        },
+                    });
+                    this.queueTranscriptGeneration(existingVideo.id, existingVideo.youtubeId);
+                }
+            }
+
             let conversation = await prisma.conversation.findFirst({
                 where: {
                     userId: user.id,
@@ -94,13 +116,8 @@ class VideoService{
             }
         })
         
-        // Start transcript and embedding generation in the background
-        transcriptService.saveTranscript(video.id, video.youtubeId)
-            .then(() => prisma.video.update({ where: { id: video.id }, data: { status: "READY" } }))
-            .catch((err) => {
-                console.error("Background transcript generation failed:", err);
-                prisma.video.update({ where: { id: video.id }, data: { status: "FAILED" } }).catch(console.error);
-            });
+        // Start transcript and embedding generation in the background.
+        this.queueTranscriptGeneration(video.id, video.youtubeId);
             
         const conversation = await conversationService.createConversation(user.id, video.id);
         
@@ -109,6 +126,25 @@ class VideoService{
             video,
             conversation,
         };
+    }
+
+    private queueTranscriptGeneration(videoId: string, youtubeId: string) {
+        void transcriptService.saveTranscript(videoId, youtubeId)
+            .then(() => prisma.video.update({ where: { id: videoId }, data: { status: "READY" } }))
+            .catch((err) => {
+                console.error("Background transcript generation failed:", err);
+                const errorCode = err instanceof TranscriptFetchError
+                    ? err.code
+                    : ERROR_CODE.TRANSCRIPT_PROCESSING_FAILED;
+                const errorMessage = err instanceof Error
+                    ? err.message
+                    : "Transcript generation failed.";
+
+                prisma.video.update({
+                    where: { id: videoId },
+                    data: { status: "FAILED", errorCode, errorMessage },
+                }).catch(console.error);
+            });
     }
 }
 

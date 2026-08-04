@@ -17,7 +17,8 @@ class TranscriptService {
 
             return formattedTranscript;
         } catch (error) {
-            throw new Error("Failed to fetch transcript");
+            console.error(`[Transcript Error] Failed for youtubeId ${youtubeId}:`, error);
+            throw new Error(`Failed to fetch transcript: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 

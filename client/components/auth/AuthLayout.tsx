@@ -6,6 +6,7 @@ import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { googleAuth } from "../../lib/googleAuthService";
+import { useToast } from "../ui/ToastContext";
 
 declare global {
   interface Window {
@@ -28,13 +29,12 @@ export default function AuthLayout({
   bottomLinkText,
   bottomLinkHref,
 }: AuthLayoutProps) {
-  const [googleError, setGoogleError] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
   const { login } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
 
   const handleCredentialResponse = async (response: any) => {
-    setGoogleError("");
     setGoogleLoading(true);
     try {
       const res = await googleAuth(response.credential);
@@ -48,7 +48,7 @@ export default function AuthLayout({
       login(res.token, mappedUser);
       router.push("/videosummary");
     } catch (err: any) {
-      setGoogleError(err.message || "Google authentication failed. Please try again.");
+      showToast(err.message || "Google authentication failed. Please try again.", "error");
     } finally {
       setGoogleLoading(false);
     }
@@ -134,10 +134,6 @@ export default function AuthLayout({
                     <span className="bg-[#F8F7F4] px-2 text-zinc-500">Or continue with</span>
                   </div>
                 </div>
-
-                {googleError && (
-                  <p className="mt-3 text-red-500 text-sm text-center">{googleError}</p>
-                )}
 
                 <div className="mt-4 flex justify-center w-full min-h-[44px]">
                   {googleLoading ? (

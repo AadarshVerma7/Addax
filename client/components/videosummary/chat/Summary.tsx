@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { renderMarkdown } from "../../../lib/markdown";
 
 interface SummaryProps {
   videoId: string | null;
@@ -81,83 +82,6 @@ function Summary({ videoId }: SummaryProps) {
     fetchSummary();
   }, [videoId]);
 
-  // A custom inline parser to handle bold formatting (**text**)
-  const parseInline = (text: string) => {
-    const parts = [];
-    let currentText = text;
-    let boldIndex = currentText.indexOf("**");
-    let keyIdx = 0;
-
-    while (boldIndex !== -1) {
-      if (boldIndex > 0) {
-        parts.push(currentText.substring(0, boldIndex));
-      }
-      const endBoldIndex = currentText.indexOf("**", boldIndex + 2);
-      if (endBoldIndex !== -1) {
-        parts.push(
-          <strong key={keyIdx++} className="font-bold text-white">
-            {currentText.substring(boldIndex + 2, endBoldIndex)}
-          </strong>
-        );
-        currentText = currentText.substring(endBoldIndex + 2);
-      } else {
-        parts.push(currentText.substring(boldIndex));
-        currentText = "";
-      }
-      boldIndex = currentText.indexOf("**");
-    }
-    if (currentText) {
-      parts.push(currentText);
-    }
-    return parts;
-  };
-
-  // Parses Markdown structure (headings, bullets, paragraphs)
-  const renderMarkdown = (markdownText: string) => {
-    const lines = markdownText.split("\n");
-    return lines.map((line, idx) => {
-      // Headers
-      if (line.startsWith("### ")) {
-        return (
-          <h3 key={idx} className="text-md font-semibold text-zinc-100 mt-4 mb-2">
-            {parseInline(line.slice(4))}
-          </h3>
-        );
-      }
-      if (line.startsWith("## ")) {
-        return (
-          <h2 key={idx} className="text-lg font-bold text-zinc-100 mt-6 mb-3 border-b border-zinc-800/40 pb-1">
-            {parseInline(line.slice(3))}
-          </h2>
-        );
-      }
-      if (line.startsWith("# ")) {
-        return (
-          <h1 key={idx} className="text-xl font-extrabold text-zinc-500 mt-8 mb-4">
-            {parseInline(line.slice(2))}
-          </h1>
-        );
-      }
-      // Bullet points
-      if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
-        return (
-          <ul key={idx} className="list-disc pl-5 my-1.5 text-zinc-300 text-sm">
-            <li>{parseInline(line.trim().slice(2))}</li>
-          </ul>
-        );
-      }
-      // Empty line
-      if (!line.trim()) {
-        return <div key={idx} className="h-2" />;
-      }
-      // Regular paragraph
-      return (
-        <p key={idx} className="text-sm leading-relaxed text-zinc-300 my-2">
-          {parseInline(line)}
-        </p>
-      );
-    });
-  };
 
   if (loading) {
     return <SummarySkeleton />;

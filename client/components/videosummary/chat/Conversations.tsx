@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import PromptInput from "./PromptInput";
 import { Copy, Check } from "lucide-react";
+import { renderMarkdown } from "../../../lib/markdown";
 
 type Role = "USER" | "ASSISTANT";
 
@@ -64,13 +65,13 @@ function MessageBubble({ message }: { message: Message }) {
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} w-full`}>
       <div className={`flex flex-col ${isUser ? "items-end" : "items-start"} max-w-[85%]`}>
         <div
-          className={`px-4 py-2.5 text-[15px] leading-snug whitespace-pre-wrap select-text break-words select-text ${
+          className={`px-4 py-2.5 text-[15px] leading-snug select-text break-words ${
             isUser
-              ? "bg-[#0A84FF] text-white rounded-[20px] rounded-br-[4px]"
+              ? "bg-[#0A84FF] text-white rounded-[20px] rounded-br-[4px] whitespace-pre-wrap"
               : "bg-[#262629] text-zinc-100 rounded-[20px] rounded-bl-[4px]"
           }`}
         >
-          {message.content}
+          {isUser ? message.content : renderMarkdown(message.content)}
         </div>
         <button
           type="button"

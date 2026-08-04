@@ -4,19 +4,19 @@ import { useState } from "react";
 import AuthLayout from "./AuthLayout";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useToast } from "../ui/ToastContext";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -33,10 +33,10 @@ export default function SignupPage() {
         login(data.token, data.user);
         router.push("/");
       } else {
-        setError(data.message || "Registration failed");
+        showToast(data.message || "Registration failed", "error");
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      showToast("An error occurred. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,6 @@ export default function SignupPage() {
       bottomLinkHref="/auth/login"
     >
       <form onSubmit={handleSubmit} className="mt-6 space-y-3">
-        {error && <p className="text-red-500 text-sm">{error}</p>}
         <input
           type="text"
           placeholder="Full name"

@@ -88,7 +88,7 @@ class AuthController {
         });
       }
 
-      if (user.provider === "GOOGLE") {
+      if (user.provider === "GOOGLE" && !user.passwordHash) {
         return res.status(400).json({
           message: "Please continue with Google.",
         });

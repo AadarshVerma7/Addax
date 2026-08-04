@@ -59,6 +59,35 @@ class ConversationService {
             nextCursor: hasMore ? page[page.length - 1].id : null,
         };
     }
+
+    async deleteConversation(conversationId: string, userId: string) {
+        const conversation = await prisma.conversation.findUnique({
+            where: { id: conversationId }
+        });
+
+        if (!conversation) {
+            throw new Error("Conversation not found");
+        }
+
+        if (conversation.userId !== userId) {
+            throw new Error("You do not have access to delete this conversation.");
+        }
+
+        // Delete all associated messages first
+        await prisma.message.deleteMany({
+            where: { conversationId }
+        });
+
+        // Delete the conversation
+        await prisma.conversation.delete({
+            where: { id: conversationId }
+        });
+
+        return {
+            success: true,
+            message: "Conversation deleted successfully."
+        };
+    }
 }
 
 export default new ConversationService();

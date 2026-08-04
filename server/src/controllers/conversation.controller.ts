@@ -49,6 +49,27 @@ class ConversationController {
             return res.status(status).json({ success: false, message: error.message });
         }
     }
+
+    async deleteConversation(req: Request<{ conversationId: string }>, res: Response) {
+        try {
+            const { conversationId } = req.params;
+            const userId = req.userId;
+
+            if (!conversationId) {
+                return res.status(400).json({ success: false, message: "Conversation id is required." });
+            }
+            if (!userId) {
+                return res.status(401).json({ success: false, message: "Unauthorized" });
+            }
+
+            const result = await conversationService.deleteConversation(conversationId, userId);
+            return res.status(200).json(result);
+        } catch (error: any) {
+            const status = error.message === "Conversation not found" ? 404 :
+                error.message === "You do not have access to delete this conversation." ? 403 : 400;
+            return res.status(status).json({ success: false, message: error.message });
+        }
+    }
 }
 
 export default new ConversationController();

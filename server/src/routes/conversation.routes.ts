@@ -12,4 +12,10 @@ conversationRouter.get(
     conversationController.getConversationMessages
 );
 
+conversationRouter.delete(
+    "/:conversationId",
+    authMiddleWare,
+    conversationController.deleteConversation
+);
+
 export default conversationRouter;

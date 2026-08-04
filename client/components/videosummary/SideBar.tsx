@@ -10,22 +10,56 @@ import {
   PanelRightClose, 
   MessageSquare, 
   Plus, 
-  MoreHorizontal,
+  MoreVertical,
   Sparkles,
   User,
   Settings,
   HelpCircle,
-  LogOut
+  LogOut,
+  Trash2
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/components/ui/ToastContext";
+
 
 function SideBarContent() {
     const { user, logout } = useAuth();
+    const { showToast } = useToast();
     const searchParams = useSearchParams();
     const [isOpen, setIsOpen] = useState<boolean | null>(null);
     const [conversations, setConversations] = useState<any[]>([]);
     const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+    const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
     const userDropdownRef = useRef<HTMLDivElement>(null);
+
+    const handleDeleteConversation = async (conversationId: string) => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/conversations/${conversationId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const data = await res.json();
+            if (data.success) {
+                setConversations((prev) => prev.filter((c) => c.id !== conversationId));
+                showToast("Conversation deleted successfully.", "success");
+                
+                const currentUrl = searchParams.get("url");
+                const deletedConv = conversations.find(c => c.id === conversationId);
+                if (deletedConv && currentUrl === deletedConv.video?.url) {
+                    window.location.href = "/videosummary";
+                }
+            } else {
+                showToast(data.message || "Failed to delete conversation", "error");
+            }
+        } catch (err) {
+            console.error("Error deleting conversation:", err);
+            showToast("An error occurred while deleting the conversation.", "error");
+        }
+    };
+
 
     useEffect(() => {
         const saved = localStorage.getItem("sidebar-open");
@@ -39,6 +73,10 @@ function SideBarContent() {
                 !userDropdownRef.current.contains(event.target as Node)
             ) {
                 setUserDropdownOpen(false);
+            }
+            const target = event.target as HTMLElement;
+            if (!target.closest(".conv-item-container")) {
+                setActiveMenuId(null);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -213,18 +251,57 @@ function SideBarContent() {
                         </h2>
 
                         {conversations.length > 0 ? (
-                            conversations.map((conv) => (
-                                <Link
-                                    key={conv.id}
-                                    href={`/videosummary/chat?url=${encodeURIComponent(conv.video?.url || "")}`}
-                                    className="group flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm text-zinc-400 transition hover:bg-zinc-800/50 hover:text-zinc-100"
-                                >
-                                    <MessageSquare size={14} className="shrink-0 text-zinc-500 group-hover:text-zinc-400" />
-                                    <span className="truncate" title={conv.title || conv.video?.title || "New Conversation"}>
-                                        {conv.title || conv.video?.title || "New Conversation"}
-                                    </span>
-                                </Link>
-                            ))
+                            conversations.map((conv) => {
+                                const isMenuOpen = activeMenuId === conv.id;
+                                return (
+                                    <div key={conv.id} className="relative group/item conv-item-container">
+                                        <Link
+                                            href={`/videosummary/chat?url=${encodeURIComponent(conv.video?.url || "")}`}
+                                            className="group flex cursor-pointer items-center justify-between rounded-md px-2 py-2 text-sm text-zinc-400 transition hover:bg-zinc-800/50 hover:text-zinc-100 pr-8"
+                                        >
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <MessageSquare size={14} className="shrink-0 text-zinc-500 group-hover:text-zinc-400" />
+                                                <span className="truncate" title={conv.title || conv.video?.title || "New Conversation"}>
+                                                    {conv.title || conv.video?.title || "New Conversation"}
+                                                </span>
+                                            </div>
+                                        </Link>
+
+                                        {/* Settings dots */}
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setActiveMenuId(isMenuOpen ? null : conv.id);
+                                            }}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover/item:flex items-center justify-center h-6 w-6 rounded-md hover:bg-zinc-700 text-zinc-500 hover:text-zinc-200 transition-all cursor-pointer border-none outline-none"
+                                            title="Settings"
+                                        >
+                                            <MoreVertical size={14} />
+                                        </button>
+
+                                        {/* Settings Dropdown */}
+                                        {isMenuOpen && (
+                                            <div className="absolute right-2 top-[80%] mt-1 bg-zinc-950 border border-zinc-850 rounded-lg shadow-2xl py-1 z-50 min-w-[120px]">
+                                                <button
+                                                    type="button"
+                                                    onClick={async (e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        setActiveMenuId(null);
+                                                        await handleDeleteConversation(conv.id);
+                                                    }}
+                                                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-colors text-left border-none outline-none cursor-pointer"
+                                                >
+                                                    <Trash2 size={12} className="shrink-0" />
+                                                    <span>Delete</span>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })
                         ) : (
                             <p className="px-2 text-xs text-zinc-600">No recent conversations.</p>
                         )}
@@ -339,7 +416,7 @@ function SideBarContent() {
                                         {user.name}
                                     </span>
                                 </div>
-                                <MoreHorizontal size={16} className="text-zinc-500 shrink-0" />
+                                <MoreVertical size={16} className="text-zinc-500 shrink-0" />
                             </button>
                         ) : (
                             <div className="flex justify-center py-2">

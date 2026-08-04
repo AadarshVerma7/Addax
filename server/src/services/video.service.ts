@@ -31,6 +31,10 @@ class VideoService{
         });
 
         if(existingVideo){
+            if (existingVideo.duration && existingVideo.duration > 3600) {
+                throw new Error("Video duration must be less than or equal to 1 hour.");
+            }
+
             let conversation = await prisma.conversation.findFirst({
                 where: {
                     userId: user.id,
@@ -49,50 +53,62 @@ class VideoService{
             }
         }
 
-        let metadata: any;
-        if (data.title) {
-            metadata = {
-                youtubeId,
-                title: data.title,
-                description: "",
-                tags: [],
-                categoryId: "0",
-                channelId: "",
-                channelTitle: data.channelTitle || "",
-                thumbnailUrl: data.thumbnailUrl || "",
-                defaultLanguage: "en",
-                defaultAudioLanguage: "en",
-                duration: 0,
-                publishedAt: new Date(),
-                viewCount: 0,
-                likeCount: 0,
-                commentCount: 0
-            };
-        } else {
-            metadata = await youtubeService.getVideoMetaData(youtubeId);
+        const metadata = await youtubeService.getVideoMetaData(youtubeId);
+
+        if (metadata.duration && metadata.duration > 3600) {
+            throw new Error("Video duration must be less than or equal to 1 hour.");
         }
 
-        const video = await prisma.video.create({
-            data:{
-                youtubeId: metadata.youtubeId,
-                url,
-                title: metadata.title,
-                description: metadata.description,
-                tags: metadata.tags,
-                categoryId: metadata.categoryId,
-                channelId: metadata.channelId,
-                channelTitle: metadata.channelTitle,
-                thumbnailUrl: metadata.thumbnailUrl,
-                defaultLanguage: metadata.defaultLanguage,
-                defaultAudioLanguage: metadata.defaultAudioLanguage,
-                duration: metadata.duration || 0,
-                publishedAt: new Date(metadata.publishedAt),
-                viewCount: metadata.viewCount,
-                likeCount: metadata.likeCount,
-                commentCount: metadata.commentCount,
-                status: "PENDING"
+        let video;
+        try {
+            video = await prisma.video.create({
+                data:{
+                    youtubeId: metadata.youtubeId,
+                    url,
+                    title: metadata.title,
+                    description: metadata.description,
+                    tags: metadata.tags,
+                    categoryId: metadata.categoryId,
+                    channelId: metadata.channelId,
+                    channelTitle: metadata.channelTitle,
+                    thumbnailUrl: metadata.thumbnailUrl,
+                    defaultLanguage: metadata.defaultLanguage,
+                    defaultAudioLanguage: metadata.defaultAudioLanguage,
+                    duration: metadata.duration || 0,
+                    publishedAt: new Date(metadata.publishedAt),
+                    viewCount: metadata.viewCount,
+                    likeCount: metadata.likeCount,
+                    commentCount: metadata.commentCount,
+                    status: "PENDING"
+                }
+            });
+        } catch (createError: any) {
+            // Check if this is a unique constraint failure on youtubeId
+            if (createError.code === "P2002" || createError.message?.includes("Unique constraint") || createError.message?.includes("duplicate key")) {
+                const concurrentlyCreatedVideo = await prisma.video.findUnique({
+                    where: { youtubeId }
+                });
+                if (concurrentlyCreatedVideo) {
+                    let conversation = await prisma.conversation.findFirst({
+                        where: {
+                            userId: user.id,
+                            videoId: concurrentlyCreatedVideo.id
+                        }
+                    });
+
+                    if (!conversation) {
+                        conversation = await conversationService.createConversation(user.id, concurrentlyCreatedVideo.id);
+                    }
+
+                    return {
+                        success: true,
+                        video: concurrentlyCreatedVideo,
+                        conversation,
+                    };
+                }
             }
-        })
+            throw createError;
+        }
         
         // Start transcript and embedding generation in the background
         transcriptService.saveTranscript(video.id, video.youtubeId)

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import YoutubeVideoFramer from "@/components/videosummary/chat/YoutubeVideoFramer";
 import { getYoutubeEmbedUrl } from "@/lib/getYoutubeEmbedUrl";
@@ -8,9 +8,12 @@ import MapTranscipts from "@/components/videosummary/chat/MapTranscipts";
 import SideBar from "@/components/videosummary/SideBar";
 import Conversations from "@/components/videosummary/chat/Conversations";
 import Summary from "@/components/videosummary/chat/Summary";
+import { useToast } from "@/components/ui/ToastContext";
 
 function ChatContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { showToast } = useToast();
   const url = searchParams.get("url");
   const title = searchParams.get("title");
   const thumbnail = searchParams.get("thumbnail");
@@ -26,6 +29,8 @@ function ChatContent() {
       setIsCreatingVideo(false);
       return;
     }
+
+    let cancelled = false;
 
     const fetchVideo = async () => {
       try {
@@ -46,24 +51,35 @@ function ChatContent() {
           }),
         });
 
-        if (!res.ok) {
-          throw new Error("Failed to create/get video");
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || "Failed to create/get video");
         }
 
-        const data = await res.json();
+        if (cancelled) return;
+
         if (data.success && data.video) {
           setVideoId(data.video.id);
           setConversationId(data.conversation?.id || null);
           window.dispatchEvent(new Event("refetchConversations"));
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (cancelled) return;
         console.error("Error creating/getting video:", err);
+        showToast(err.message || "Failed to load video summary.", "warning");
+        router.push("/videosummary");
       } finally {
-        setIsCreatingVideo(false);
+        if (!cancelled) {
+          setIsCreatingVideo(false);
+        }
       }
     };
 
     fetchVideo();
+
+    return () => {
+      cancelled = true;
+    };
   }, [url, title, thumbnail, channel]);
 
   return (

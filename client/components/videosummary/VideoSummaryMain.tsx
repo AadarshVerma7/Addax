@@ -5,6 +5,7 @@ import SearchBar from "./SearchBar";
 import ProceedWithVideo from "./ProceedWithVideo";
 import { AnimatePresence, motion } from "framer-motion";
 import SideBar from "./SideBar";
+import { useToast } from "@/components/ui/ToastContext";
 
 interface VideoData {
     title: string;
@@ -18,6 +19,7 @@ function VideoSummaryMain() {
     const [loading, setLoading] = useState(false);
     const [videoData, setVideoData] = useState<VideoData | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const { showToast } = useToast();
 
     useEffect(() => {
         const isYouTubeUrl = (testUrl: string) => {
@@ -69,6 +71,13 @@ function VideoSummaryMain() {
                     throw new Error(
                         data.message || "Failed to fetch video details"
                     );
+                }
+
+                if (data.data.duration > 3600) {
+                    showToast("Video duration exceeds 1 hour. Only videos up to 1 hour are supported.", "warning");
+                    setError("Video duration must be 1 hour or less.");
+                    setVideoData(null);
+                    return;
                 }
 
                 setVideoData({

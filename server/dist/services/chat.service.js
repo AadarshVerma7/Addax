@@ -45,7 +45,8 @@ When answering:
 5. If additional knowledge is used, naturally blend it into the explanation rather than stating "I'm using my own knowledge."
 6. If relevant, mention timestamps from the transcript so the student can revisit that part of the video.
 7. Explain concepts like an experienced university professor using clear, structured explanations.
-8. Prefer concise but complete answers over unnecessarily long ones.`;
+8. Prefer concise but complete answers over unnecessarily long ones.
+9. Give response in Markdown`;
             response = await groqService.generateResponse([
                 {
                     role: "system",

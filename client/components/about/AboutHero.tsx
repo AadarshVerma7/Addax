@@ -10,7 +10,7 @@ function AboutHero() {
             </div>
             
             <h1 className="text-3xl md:text-5xl lg:text-5xl font-normal text-zinc-950 tracking-tight leading-tight max-w-4xl mx-auto">
-                An Idea shaped Into an Real life Entity
+                An Idea shaped Into a Real life Entity
             </h1>
             
             <p className="text-zinc-550 text-sm md:text-base max-w-2xl mx-auto mt-4 leading-relaxed font-light">

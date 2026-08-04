@@ -48,7 +48,7 @@ function LandingPageNavbar({ theme = "dark" }: LandingPageNavbarProps) {
     const navlinks = {
         Home: "/",
         About: "/about",
-        Contact: "/contact",
+        Contact: "/about#contact",
     };
 
     const isNavbarDark = theme === "dark" && isTop;

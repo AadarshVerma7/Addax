@@ -70,51 +70,69 @@ function AboutDevelopersSection() {
                 </p>
             </div>
 
-            <div className="flex justify-center items-center gap-6 px-40 mt-8">
-                {developers.map((dev) => (
-                    <div 
-                        key={dev.name}
-                        className="bg-[#F3F4F6] rounded-3xl p-6 flex flex-col justify-between min-h-60 hover:shadow-md transition-all duration-300"
-                    >
-                        <p className="text-zinc-700 text-xs md:text-sm font-light leading-relaxed mb-6 italic">
-                            {dev.quote}
-                        </p>
-                        
-                        <div className="flex items-center justify-between w-full mt-auto border-t border-zinc-200/50 pt-4">
-                            <div className="flex items-center gap-3">
-                                <img
-                                    src={dev.avatar}
-                                    alt={dev.name}
-                                    className="h-9 w-9 rounded-full object-cover border border-zinc-250/30"
-                                />
-                                <div className="text-left">
-                                    <h4 className="font-semibold text-zinc-900 text-xs leading-none">{dev.name}</h4>
-                                    {/* <span className="text-[10px] text-zinc-500 mt-1 block">{dev.role}</span> */}
-                                </div>
-                            </div>
-                            
-                            <div className="flex gap-2 text-zinc-400">
-                                <a 
-                                    href={dev.github} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    className="hover:text-zinc-900 transition-colors p-1"
-                                >
-                                    <GithubIcon size={12} />
-                                </a>
-                                <a 
-                                    href={dev.linkedin} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer" 
-                                    className="hover:text-blue-600 transition-colors p-1"
-                                >
-                                    <LinkedinIcon size={12} />
-                                </a>
-                            </div>
+            <div className="flex flex-col md:flex-row justify-center items-stretch gap-6 md:gap-5 mt-10 max-w-4xl mx-auto">
+    {developers.map((dev) => (
+        <div
+            key={dev.name}
+            className="relative w-full md:w-[310px] pb-4 "
+        >
+            {/* Testimonial Card */}
+            <div className="bg-[#F3F4F6] rounded-[18px] min-h-60 lg:min-h-70 px-6 pt-6 pb-14">
+                {/* Large Quote Mark */}
+                <div
+                    className="text-[#D5D8DC] text-[58px] font-serif font-bold leading-[0.8] mb-5 select-none"
+                    aria-hidden="true"
+                >
+                    “
+                </div>
+
+                {/* Quote */}
+                <p className="text-zinc-900 text-[15px] md:text-[16px] font-normal leading-[1.45]">
+                    {dev.quote.replace(/^"|"$/g, "")}
+                </p>
+            </div>
+
+            {/* Profile — overlaps bottom of card */}
+            <div className="absolute left-0 bottom-2">
+                <div className="bg-white rounded-r-[14px] rounded-l- px-2.5 py-2 flex items-center gap-2.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                    <img
+                        src={dev.avatar}
+                        alt={dev.name}
+                        className="h-9 w-9 rounded-full object-cover"
+                    />
+
+                    <div className="text-left pr-1">
+                        <h4 className="font-semibold text-zinc-900 text-[12px] leading-tight whitespace-nowrap">
+                            {dev.name}
+                        </h4>
+
+                        <div className="flex items-center gap-2 mt-1">
+                            <a
+                                href={dev.github}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`${dev.name} GitHub`}
+                                className="text-zinc-400 hover:text-zinc-900 transition-colors"
+                            >
+                                <GithubIcon size={14} />
+                            </a>
+
+                            <a
+                                href={dev.linkedin}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`${dev.name} LinkedIn`}
+                                className="text-zinc-400 hover:text-blue-600 transition-colors"
+                            >
+                                <LinkedinIcon size={14} />
+                            </a>
                         </div>
                     </div>
-                ))}
+                </div>
             </div>
+        </div>
+    ))}
+</div>
         </section>
     );
 }

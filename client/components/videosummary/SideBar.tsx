@@ -244,34 +244,34 @@ function SideBarContent() {
                                             <p className="text-xs font-medium text-zinc-200 truncate mt-0.5">{user.name}</p>
                                             <p className="text-[10px] text-zinc-500 truncate">{user.email}</p>
                                         </div>
-                                        <button
+                                        {/* <button
                                             onClick={() => setUserDropdownOpen(false)}
                                             className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 transition-colors text-left"
                                         >
                                             <Sparkles size={14} className="text-amber-400 shrink-0" />
                                             <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Upgrade to Pro</span>
-                                        </button>
-                                        <button
+                                        </button> */}
+                                        {/* <button
                                             onClick={() => setUserDropdownOpen(false)}
                                             className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 transition-colors text-left"
                                         >
                                             <User size={14} className="text-zinc-500 shrink-0" />
                                             <span>My Profile</span>
-                                        </button>
-                                        <button
+                                        </button> */}
+                                        {/* <button
                                             onClick={() => setUserDropdownOpen(false)}
                                             className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 transition-colors text-left"
                                         >
                                             <Settings size={14} className="text-zinc-500 shrink-0" />
                                             <span>Settings</span>
-                                        </button>
-                                        <button
+                                        </button> */}
+                                        {/* <button
                                             onClick={() => setUserDropdownOpen(false)}
                                             className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 transition-colors text-left border-b border-zinc-800/60 pb-2 mb-1"
                                         >
                                             <HelpCircle size={14} className="text-zinc-500 shrink-0" />
                                             <span>Help & Support</span>
-                                        </button>
+                                        </button> */}
                                         <button
                                             onClick={() => {
                                                 setUserDropdownOpen(false);

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ClockArrowRight, Handshake } from "lucide-react";
 import Image from "next/image";
 import HandShake from "../../assets/about/handshake.png";
-import Computer from "../../assets/about/computer.png"
+import Computer from "../../assets/about/computer.png";
 
 function AboutBentoGrid() {
   return (
@@ -13,12 +13,12 @@ function AboutBentoGrid() {
         {/* Left Card */}
         <div className="lg:row-span-2 bg-[#F5F5F4] rounded-3xl p-5 flex flex-col">
           <div className="rounded-2xl overflow-hidden h-50">
-  <Image
-    src={Computer}
-    alt="Workspace"
-    className="w-full h-full object-contain"
-  />
-</div>
+            <Image
+              src={Computer}
+              alt="Workspace"
+              className="w-full h-full object-contain"
+            />
+          </div>
 
           <div className="mt-6 flex flex-col flex-1 justify-between">
             <h2 className="text-2xl font-medium leading-snug text-zinc-900">

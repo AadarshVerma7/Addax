@@ -5,6 +5,16 @@ import prisma from "../lib/prisma.js";
 
 class SummaryService{
 
+    private readonly summaryModels = [
+        "gemini-3.5-flash",
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+        "gemini-1.5-flash",
+        "gemini-1.5-pro",
+    ];
+
     private ai = new GoogleGenAI({
         apiKey : process.env.GEMINI_API_KEY || process.env.YOUTUBE_API_KEY || "",
     });
@@ -34,12 +44,23 @@ Transcript:
 
 ${transcript}
 `;
-    const response = await this.ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: prompt,
-    });
+        for (const model of this.summaryModels) {
+            try {
+                const response = await this.ai.models.generateContent({
+                    model,
+                    contents: prompt,
+                });
 
-    return response.text ?? "";
+                const summary = response.text?.trim();
+                if (summary) {
+                    return summary;
+                }
+            } catch (error) {
+                console.warn(`Summary generation failed with ${model}:`, error);
+            }
+        }
+
+        throw new Error("Summary not available currently");
     }
 
 

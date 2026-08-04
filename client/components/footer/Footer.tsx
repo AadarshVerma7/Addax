@@ -12,16 +12,16 @@ const footerLinks = [
             { name: "About", href: "/about" },
             // { name: "Services", href: "/services" },
             // { name: "Blog", href: "#" },
-            { name: "Careers", href: "#" },
+            { name: "Dashboard", href: "/videosummary" },
         ],
     },
     {
         title: "Resources",
         links: [
-            { name: "Help", href: "#" },
-            { name: "Contact", href: "#" },
-            { name: "FAQs", href: "#" },
-            { name: "Privacy", href: "#" },
+            { name: "Help", href: "/about" },
+            { name: "Contact", href: "/about#contact" },
+            { name: "FAQs", href: "/#faqs" },
+            // { name: "Privacy", href: "#" },
         ],
     },
 ];

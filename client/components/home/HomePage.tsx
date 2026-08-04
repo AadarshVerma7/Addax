@@ -29,7 +29,9 @@ function HomePage() {
 
         <HowCanWeHelpSection />
         <FeaturesSection/>
+        <div id='faqs'>
         <FaqSection/>
+        </div>
         <ContactForm/>
         <Footer/>
     </>

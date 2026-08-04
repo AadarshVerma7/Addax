@@ -14,7 +14,9 @@ function AboutPage() {
             <AboutHero />
             <AboutBentoGrid />
             <AboutDevelopersSection />
-            <ContactForm/>
+            <div id="contact">
+            <ContactForm />
+            </div>
             <Footer />
         </div>
     );
